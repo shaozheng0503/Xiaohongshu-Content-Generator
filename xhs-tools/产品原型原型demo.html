@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>小红书内容生成工具 - 原型Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: '微软雅黑', Arial, sans-serif; background: #f7f7f7; margin: 0; }
+    header { text-align: center; margin: 2em 0 1em 0; }
+    #upload-area { border: 2px dashed #e57373; padding: 2em; text-align: center; background: #fff; cursor: pointer; max-width: 500px; margin: 0 auto; border-radius: 8px; }
+    #processing-page, #result-page { max-width: 600px; margin: 2em auto; background: #fff; padding: 2em; border-radius: 8px; display: none; }
+    #progress-bar-bg { width: 100%; background: #eee; height: 10px; border-radius: 5px; margin: 1em 0; }
+    #progress-bar { height: 10px; background: #e57373; width: 0; border-radius: 5px; transition: width 0.3s; }
+    #image-carousel img { max-width: 100%; margin: 0.5em 0; border-radius: 4px; }
+    #result-actions button { margin: 0.5em; padding: 0.5em 1.2em; border: none; background: #e57373; color: #fff; border-radius: 4px; cursor: pointer; }
+    #result-actions button:hover { background: #d32f2f; }
+    #history-list { margin-top: 2em; max-width: 500px; margin-left: auto; margin-right: auto; }
+    .hidden { display: none; }
+    @media (max-width: 700px) {
+      #processing-page, #result-page, #upload-area { max-width: 98vw; padding: 1em; }
+    }
+  </style>
+</head>
+<body>
+  <!-- 首页 -->
+  <div id="home-page">
+    <header>
+      <h1>小红书内容生成工具</h1>
+      <p>一键将博客文章转为小红书图片和文案</p>
+    </header>
+    <section id="upload-area">
+      <input type="file" id="file-input" multiple style="display:none;" />
+      <div id="drag-area">拖拽或点击上传文章</div>
+    </section>
+    <section id="history-list">
+      <h3>历史记录（示例）</h3>
+      <ul>
+        <li>2024-05-01 文章A <button disabled>下载</button></li>
+        <li>2024-05-02 文章B <button disabled>下载</button></li>
+      </ul>
+    </section>
+  </div>
+
+  <!-- 处理页 -->
+  <div id="processing-page">
+    <aside>
+      <div>处理进度：</div>
+      <div id="progress-bar-bg"><div id="progress-bar"></div></div>
+      <button id="cancel-btn">取消处理</button>
+    </aside>
+    <main>
+      <div id="preview-area">正在处理，请稍候...</div>
+      <div id="error-msg" class="hidden">处理失败，请重试</div>
+    </main>
+  </div>
+
+  <!-- 结果页 -->
+  <div id="result-page">
+    <h2 id="result-title">自动生成的标题示例</h2>
+    <div id="image-carousel">
+      <img src="https://dummyimage.com/400x200/e57373/fff&text=图片1" alt="图片1" />
+      <img src="https://dummyimage.com/400x200/ba68c8/fff&text=图片2" alt="图片2" />
+    </div>
+    <div id="desc-area">自动生成的小红书描述文案示例，内容精炼有吸引力。</div>
+    <div id="result-actions">
+      <button id="download-all">下载全部</button>
+      <button id="copy-desc">复制文案</button>
+      <button id="back-home">返回首页</button>
+    </div>
+  </div>
+
+  <script>
+    // 页面切换
+    function showPage(pageId) {
+      ['home-page', 'processing-page', 'result-page'].forEach(id => {
+        document.getElementById(id).style.display = (id === pageId) ? 'block' : 'none';
+      });
+    }
+
+    // 首页上传
+    document.getElementById('drag-area').addEventListener('click', () => {
+      document.getElementById('file-input').click();
+    });
+    document.getElementById('file-input').addEventListener('change', handleUpload);
+    document.getElementById('drag-area').addEventListener('dragover', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      document.getElementById('upload-area').style.background = '#ffeaea';
+    });
+    document.getElementById('drag-area').addEventListener('dragleave', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      document.getElementById('upload-area').style.background = '#fff';
+    });
+    document.getElementById('drag-area').addEventListener('drop', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      document.getElementById('upload-area').style.background = '#fff';
+      handleUpload({ target: { files: e.dataTransfer.files } });
+    });
+
+    function handleUpload(e) {
+      if (!e.target.files.length) return;
+      showPage('processing-page');
+      startProcessing(e.target.files);
+    }
+
+    // 处理页逻辑
+    function startProcessing(files) {
+      let progress = 0;
+      document.getElementById('progress-bar').style.width = '0%';
+      document.getElementById('error-msg').classList.add('hidden');
+      document.getElementById('preview-area').innerText = '正在处理，请稍候...';
+      let interval = setInterval(() => {
+        progress += 10;
+        document.getElementById('progress-bar').style.width = progress + '%';
+        if (progress >= 100) {
+          clearInterval(interval);
+          setTimeout(showResult, 400);
+        }
+      }, 200);
+      document.getElementById('cancel-btn').onclick = () => {
+        clearInterval(interval);
+        showPage('home-page');
+      };
+    }
+
+    // 结果页展示
+    function showResult() {
+      showPage('result-page');
+      // 可根据实际处理结果动态填充内容
+    }
+
+    // 结果页交互
+    document.getElementById('download-all').onclick = () => {
+      alert('模拟下载全部内容');
+    };
+    document.getElementById('copy-desc').onclick = () => {
+      const text = document.getElementById('desc-area').innerText;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text);
+        alert('文案已复制');
+      } else {
+        alert('请手动复制文案');
+      }
+    };
+    document.getElementById('back-home').onclick = () => showPage('home-page');
+
+    // 默认显示首页
+    showPage('home-page');
+  </script>
+</body>
+</html> 
