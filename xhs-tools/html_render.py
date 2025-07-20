@@ -204,6 +204,71 @@ def render_article_html(title, content, desc, style_type='simple', is_html=False
         </div>
         </body></html>
         '''
+    elif style_type == 'emoji':
+        html = f'''
+        <html><head>
+        <meta charset="utf-8">
+        {highlight_css}
+        <style>
+        body {{ background: #fffbe7; font-family: '幼圆', '微软雅黑', Arial, sans-serif; color: #ff9800; margin: 0; padding: 0; }}
+        .container {{ max-width: 600px; margin: 2em auto; background: #fffde7; border-radius: 30px; box-shadow: 0 4px 24px #ffe082; padding: 2.5em 2em; border: 3px dashed #ffd54f; }}
+        h1 {{ color: #ff9800; font-size: 2.1em; text-align: center; margin-bottom: 1em; letter-spacing: 2px; text-shadow: 1px 2px 8px #ffe082; }}
+        .desc {{ background: #fff8e1; color: #ff9800; font-size: 1.1em; border-radius: 16px; padding: 1em 1.2em; margin-bottom: 1.5em; text-align: center; box-shadow: 0 2px 8px #ffe082; }}
+        .content p {{ margin: 1.2em 0; line-height: 2.1; font-size: 1.13em; background: #fffbe7; border-radius: 12px; padding: 0.7em 1em; box-shadow: 0 1px 4px #ffe082; border-left: 6px solid #ffd54f; }}
+        </style></head><body>
+        <div class="container">
+          <h1>✨{title}✨</h1>
+          <div class="desc">{desc} <span style='font-size:1.3em;'>😊🚀🌈</span></div>
+          <div class="content">
+            {paragraphs}
+          </div>
+        </div>
+        </body></html>
+        '''
+    elif style_type == 'macaron':
+        html = f'''
+        <html><head>
+        <meta charset="utf-8">
+        {highlight_css}
+        <style>
+        body {{ background: linear-gradient(135deg, #ffe0f7 0%, #e0f7fa 100%); font-family: '微软雅黑', Arial, sans-serif; color: #a259ff; margin: 0; padding: 0; }}
+        .container {{ max-width: 600px; margin: 2em auto; background: #fff; border-radius: 32px; box-shadow: 0 8px 36px #b2f7ef; padding: 2.5em 2em; border: 3px solid #a259ff; }}
+        h1 {{ color: #a259ff; font-size: 2.1em; text-align: center; margin-bottom: 1em; letter-spacing: 2px; text-shadow: 1px 2px 8px #ffe4f7; }}
+        .desc {{ background: #e0f7fa; color: #a259ff; font-size: 1.1em; border-radius: 16px; padding: 1em 1.2em; margin-bottom: 1.5em; text-align: center; box-shadow: 0 2px 8px #ffd6ec; }}
+        .content p {{ margin: 1.2em 0; line-height: 2.1; font-size: 1.13em; background: #ffe0f7; border-radius: 12px; padding: 0.7em 1em; box-shadow: 0 1px 4px #ffd6ec; border-left: 6px solid #a259ff; }}
+        </style></head><body>
+        <div class="container">
+          <h1>🍬{title}🍬</h1>
+          <div class="desc">{desc} <span style='font-size:1.3em;'>🧁🍭🍡</span></div>
+          <div class="content">
+            {paragraphs}
+          </div>
+        </div>
+        </body></html>
+        '''
+    elif style_type == 'sticker':
+        html = f'''
+        <html><head>
+        <meta charset="utf-8">
+        {highlight_css}
+        <style>
+        body {{ background: #f9fbe7; font-family: '微软雅黑', Arial, sans-serif; color: #43a047; margin: 0; padding: 0; }}
+        .container {{ max-width: 600px; margin: 2em auto; background: #fff; border-radius: 28px; box-shadow: 0 6px 32px #c5e1a5; padding: 2.5em 2em; border: 3px dashed #43a047; position: relative; }}
+        h1 {{ color: #43a047; font-size: 2em; text-align: left; margin-bottom: 1em; letter-spacing: 1px; }}
+        .desc {{ background: #e8f5e9; color: #43a047; font-size: 1.1em; border-radius: 12px; padding: 0.8em 1em; margin-bottom: 1.5em; text-align: left; box-shadow: 0 2px 8px #c5e1a5; }}
+        .content p {{ margin: 1.2em 0; line-height: 2.1; font-size: 1.13em; background: #f1f8e9; border-radius: 10px; padding: 0.7em 1em; box-shadow: 0 1px 4px #c5e1a5; border-left: 6px solid #43a047; }}
+        .sticker {{ position: absolute; top: -18px; right: -18px; background: #fffde7; color: #ff9800; border: 2px solid #ffd54f; border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; font-size: 2em; box-shadow: 0 2px 8px #ffe082; }}
+        </style></head><body>
+        <div class="container">
+          <div class="sticker">📎</div>
+          <h1>{title}</h1>
+          <div class="desc">{desc} <span style='font-size:1.2em;'>🌟</span></div>
+          <div class="content">
+            {paragraphs}
+          </div>
+        </div>
+        </body></html>
+        '''
     else:
         # 默认用simple
         return render_article_html(title, content, desc, style_type='simple', is_html=is_html, highlight=highlight, highlight_theme=highlight_theme)

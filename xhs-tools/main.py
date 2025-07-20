@@ -8,9 +8,9 @@ import datetime
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton,
     QTextEdit, QFileDialog, QMessageBox, QProgressBar, QComboBox, QSpinBox, QScrollArea, QFrame, QCheckBox, QDialog, QDialogButtonBox,
-    QMenu, QAction, QToolTip
+    QMenu, QAction, QToolTip, QGraphicsDropShadowEffect
 )
-from PyQt5.QtGui import QPixmap, QIcon, QFont
+from PyQt5.QtGui import QPixmap, QIcon, QFont, QPainter, QColor
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtCore import Qt, QTimer, QUrl, QMimeData, QPoint
 from PyQt5.QtGui import QDrag
@@ -29,6 +29,9 @@ STYLE_MAP = {
     '暗黑科技': 'darktech',
     '卡哇伊风格': 'kawaii',
     '简约清新风': 'simple',
+    'emoji风': 'emoji',
+    '马卡龙风': 'macaron',
+    '贴纸风': 'sticker',
 }
 HIGHLIGHT_THEMES = {
     'GitHub': 'github',
@@ -243,34 +246,53 @@ THEME_QSS = {
 
 CARD_QSS = {
     'minimal': '''
-        QFrame.card { background: #fff; border-radius: 28px; box-shadow: 0 6px 32px #e0e0e0; border: 1.5px solid #e0e0e0; }
-        QLabel, QTextEdit { color: #222; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.18em; }
-    ''',
-    'card': '''
-        QFrame.card { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #fff, stop:1 #f3f6fa); border-radius: 32px; box-shadow: 0 8px 36px #dbeafe; border: 2px solid #1976d2; }
-        QLabel, QTextEdit { color: #1976d2; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.22em; font-weight: bold; }
-    ''',
-    'gradient': '''
-        QFrame.card { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #f8ffae, stop:1 #43c6ac); border-radius: 32px; box-shadow: 0 8px 36px #b2f7ef; border: 2px solid #43c6ac; }
+        QFrame.card { background: #fff; border-radius: 32px; border: 1.5px solid #e0e0e0; padding: 32px 28px 24px 28px; }
         QLabel, QTextEdit { color: #222; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.22em; }
     ''',
+    'card': '''
+        QFrame.card { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #fff, stop:1 #f3f6fa); border-radius: 36px; border: 2px solid #1976d2; padding: 36px 32px 28px 32px; }
+        QLabel, QTextEdit { color: #1976d2; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.26em; font-weight: bold; }
+    ''',
+    'gradient': '''
+        QFrame.card { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #f8ffae, stop:1 #43c6ac); border-radius: 36px; border: 2px solid #43c6ac; padding: 36px 32px 28px 32px; }
+        QLabel, QTextEdit { color: #222; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.26em; }
+    ''',
     'fresh': '''
-        QFrame.card { background: #e0f7fa; border-radius: 28px; box-shadow: 0 6px 32px #b2ebf2; border: 1.5px solid #4dd0e1; }
-        QLabel, QTextEdit { color: #00796b; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.18em; }
+        QFrame.card { background: #e0f7fa; border-radius: 32px; border: 1.5px solid #4dd0e1; padding: 32px 28px 24px 28px; }
+        QLabel, QTextEdit { color: #00796b; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.22em; }
     ''',
     'darktech': '''
-        QFrame.card { background: #23272e; border-radius: 28px; box-shadow: 0 6px 32px #44475a; border: 1.5px solid #44475a; }
-        QLabel, QTextEdit { color: #f8f8f2; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.18em; }
+        QFrame.card { background: #23272e; border-radius: 32px; border: 1.5px solid #44475a; padding: 32px 28px 24px 28px; }
+        QLabel, QTextEdit { color: #f8f8f2; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.22em; }
     ''',
     'kawaii': '''
-        QFrame.card { background: #fff0fa; border-radius: 32px; box-shadow: 0 8px 36px #ffd6ec; border: 2px solid #ffb6d5; }
-        QLabel, QTextEdit { color: #e573b4; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.22em; }
+        QFrame.card { background: #fff0fa; border-radius: 36px; border: 2px solid #ffb6d5; padding: 36px 32px 28px 32px; }
+        QLabel, QTextEdit { color: #e573b4; font-family: '幼圆', '微软雅黑', Arial, sans-serif; font-size: 1.26em; }
     ''',
     'simple': '''
-        QFrame.card { background: #fff; border-radius: 28px; box-shadow: 0 6px 32px #dbeafe; border: 1.5px solid #e0e0e0; }
-        QLabel, QTextEdit { color: #1976d2; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.18em; }
+        QFrame.card { background: #fff; border-radius: 32px; border: 1.5px solid #e0e0e0; padding: 32px 28px 24px 28px; }
+        QLabel, QTextEdit { color: #1976d2; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.22em; }
+    ''',
+    'emoji': '''
+        QFrame.card { background: #fffde7; border-radius: 36px; border: 3px dashed #ffd54f; padding: 36px 32px 28px 32px; }
+        QLabel, QTextEdit { color: #ff9800; font-family: '幼圆', '微软雅黑', Arial, sans-serif; font-size: 1.26em; }
+    ''',
+    'macaron': '''
+        QFrame.card { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #ffe0f7, stop:1 #e0f7fa); border-radius: 36px; border: 3px solid #a259ff; padding: 36px 32px 28px 32px; }
+        QLabel, QTextEdit { color: #a259ff; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.26em; }
+    ''',
+    'sticker': '''
+        QFrame.card { background: #fff; border-radius: 32px; border: 3px dashed #43a047; padding: 32px 28px 24px 28px; }
+        QLabel, QTextEdit { color: #43a047; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.22em; }
     ''',
 }
+
+def add_card_shadow(widget, color="#e3eafc", blur=32, x_offset=0, y_offset=8):
+    effect = QGraphicsDropShadowEffect()
+    effect.setBlurRadius(blur)
+    effect.setColor(QColor(color))
+    effect.setOffset(x_offset, y_offset)
+    widget.setGraphicsEffect(effect)
 
 class EditDialog(QDialog):
     def __init__(self, orig_md, parent=None):
@@ -491,7 +513,31 @@ class XHSWindow(QWidget):
         input_row.addWidget(self.hl_theme_combo)
         self.card_style_label = QLabel(t['card_style'])
         self.card_style_combo = QComboBox()
-        self.card_style_combo.addItems(list(STYLE_MAP.keys()))
+        # 增加带emoji的缩略图
+        def emoji_icon(emoji):
+            pix = QPixmap(32, 32)
+            pix.fill(Qt.transparent)
+            painter = QPainter(pix)
+            painter.setFont(QFont('Segoe UI Emoji', 20))
+            painter.drawText(pix.rect(), Qt.AlignCenter, emoji)
+            painter.end()
+            return QIcon(pix)
+        style_icons = {
+            '极简黑白': emoji_icon('⬛'),
+            '杂志卡片': emoji_icon('📰'),
+            '梦幻渐变': emoji_icon('🌈'),
+            '清新自然': emoji_icon('🌿'),
+            '暗黑科技': emoji_icon('🖤'),
+            '卡哇伊风格': emoji_icon('🎀'),
+            '简约清新风': emoji_icon('💧'),
+            'emoji风': emoji_icon('😃'),
+            '马卡龙风': emoji_icon('🍬'),
+            '贴纸风': emoji_icon('📎'),
+        }
+        self.card_style_combo.clear()
+        for style in STYLE_MAP.keys():
+            icon = style_icons.get(style, QIcon())
+            self.card_style_combo.addItem(icon, style)
         self.card_style_combo.currentIndexChanged.connect(self.on_card_style_change)
         self.beautify_btn = QPushButton(t['beautify'])
         self.beautify_btn.setToolTip('自动选择推荐模板和美化参数')
@@ -600,7 +646,7 @@ class XHSWindow(QWidget):
         # 推荐模板：杂志卡片
         self.card_style_combo.setCurrentText('杂志卡片')
         self.split_spin.setValue(max(2, self.split_spin.value()))
-        QMessageBox.information(self, '一键美化', '已应用推荐模板“杂志卡片”并优化分割，欢迎继续微调！')
+        QMessageBox.information(self, '一键美化', '已应用推荐模板"杂志卡片"并优化分割，欢迎继续微调！')
         self.refresh_previews()
     def get_style_type(self):
         style_name = self.card_style_combo.currentText()
@@ -698,7 +744,7 @@ class XHSWindow(QWidget):
                     self.batch_tasks.append(task)
                 except Exception as e:
                     QMessageBox.warning(self, '批量处理失败', f'{file_path}: {e}')
-            QMessageBox.information(self, '批量处理', f'已添加 {len(file_paths)} 篇文章到批量任务，可点击“批量处理”按钮查看。')
+            QMessageBox.information(self, '批量处理', f'已添加 {len(file_paths)} 篇文章到批量任务，可点击"批量处理"按钮查看。')
 
     def on_mode_change(self, idx):
         if idx == 0:
@@ -755,6 +801,7 @@ class XHSWindow(QWidget):
                 card.setObjectName('card')
                 card.setFrameShape(QFrame.StyledPanel)
                 card.setStyleSheet(CARD_QSS.get(self.get_style_type(), CARD_QSS['minimal']))
+                add_card_shadow(card)
                 card_layout = QVBoxLayout()
                 card_layout.setSpacing(16)
                 # 顶部信息
@@ -823,6 +870,7 @@ class XHSWindow(QWidget):
                 card.setObjectName('card')
                 card.setFrameShape(QFrame.StyledPanel)
                 card.setStyleSheet(CARD_QSS.get(self.get_style_type(), CARD_QSS['minimal']))
+                add_card_shadow(card)
                 card_layout = QVBoxLayout()
                 card_layout.setSpacing(16)
                 # 顶部信息
