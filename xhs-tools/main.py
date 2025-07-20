@@ -32,6 +32,9 @@ STYLE_MAP = {
     'emoji风': 'emoji',
     '马卡龙风': 'macaron',
     '贴纸风': 'sticker',
+    '复古学习感': 'retro',
+    '苹果备忘录': 'apple',
+    '奶油胶风': 'cream',
 }
 HIGHLIGHT_THEMES = {
     'GitHub': 'github',
@@ -241,49 +244,73 @@ THEME_QSS = {
         QFrame.card { background: #3a2a3d; border-radius: 28px; box-shadow: 0 6px 32px #ffb6d5; margin: 2.5em 1.5em; padding: 2.5em 2em 2em 2em; border: 1.5px solid #ffb6d5; }
         QFrame#card:hover { box-shadow: 0 12px 48px #e573b4; }
         QFrame.line { border-top: 2px solid #ffb6d5; margin: 1em 0; }
-    '''
+    ''',
+    'retro': '''
+        QFrame.card { background: #fdf6e3; border-radius: 24px; border: 2px dashed #b58900; padding: 32px 24px 20px 24px; }
+        QLabel, QTextEdit { color: #b58900; font-family: 'Fira Mono', '微软雅黑', monospace; font-size: 1.18em; }
+    ''',
+    'apple': '''
+        QFrame.card { background: #fffbe7; border-radius: 24px; border: 2px solid #e1e1e1; padding: 32px 24px 20px 24px; }
+        QLabel, QTextEdit { color: #222; font-family: 'SF Pro Display', '微软雅黑', Arial, sans-serif; font-size: 1.18em; }
+    ''',
+    'cream': '''
+        QFrame.card { background: #fff0e6; border-radius: 32px; border: 2px solid #ffd6b3; padding: 36px 28px 24px 28px; }
+        QLabel, QTextEdit { color: #ff8c42; font-family: 'Comic Sans MS', '微软雅黑', Arial, sans-serif; font-size: 1.22em; }
+    ''',
 }
 
 CARD_QSS = {
     'minimal': '''
-        QFrame.card { background: #fff; border-radius: 32px; border: 1.5px solid #e0e0e0; padding: 32px 28px 24px 28px; }
-        QLabel, QTextEdit { color: #222; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.22em; }
+        QFrame.card { background: #fff; border-radius: 24px; border: 1.5px solid #e0e0e0; padding: 24px 20px 16px 20px; }
+        QLabel, QTextEdit { color: #222; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.16em; }
     ''',
     'card': '''
-        QFrame.card { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #fff, stop:1 #f3f6fa); border-radius: 36px; border: 2px solid #1976d2; padding: 36px 32px 28px 32px; }
-        QLabel, QTextEdit { color: #1976d2; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.26em; font-weight: bold; }
+        QFrame.card { background: #f3f6fa; border-radius: 28px; border: 2px solid #1976d2; padding: 28px 22px 18px 22px; }
+        QLabel, QTextEdit { color: #1976d2; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.18em; font-weight: bold; }
     ''',
     'gradient': '''
-        QFrame.card { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #f8ffae, stop:1 #43c6ac); border-radius: 36px; border: 2px solid #43c6ac; padding: 36px 32px 28px 32px; }
-        QLabel, QTextEdit { color: #222; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.26em; }
+        QFrame.card { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #f8ffae, stop:1 #43c6ac); border-radius: 28px; border: 2px solid #43c6ac; padding: 28px 22px 18px 22px; }
+        QLabel, QTextEdit { color: #222; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.18em; }
     ''',
     'fresh': '''
-        QFrame.card { background: #e0f7fa; border-radius: 32px; border: 1.5px solid #4dd0e1; padding: 32px 28px 24px 28px; }
-        QLabel, QTextEdit { color: #00796b; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.22em; }
+        QFrame.card { background: #e0f7fa; border-radius: 24px; border: 1.5px solid #4dd0e1; padding: 24px 20px 16px 20px; }
+        QLabel, QTextEdit { color: #00796b; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.16em; }
     ''',
     'darktech': '''
-        QFrame.card { background: #23272e; border-radius: 32px; border: 1.5px solid #44475a; padding: 32px 28px 24px 28px; }
-        QLabel, QTextEdit { color: #f8f8f2; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.22em; }
+        QFrame.card { background: #23272e; border-radius: 24px; border: 1.5px solid #44475a; padding: 24px 20px 16px 20px; }
+        QLabel, QTextEdit { color: #f8f8f2; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.16em; }
     ''',
     'kawaii': '''
-        QFrame.card { background: #fff0fa; border-radius: 36px; border: 2px solid #ffb6d5; padding: 36px 32px 28px 32px; }
-        QLabel, QTextEdit { color: #e573b4; font-family: '幼圆', '微软雅黑', Arial, sans-serif; font-size: 1.26em; }
+        QFrame.card { background: #fff0fa; border-radius: 28px; border: 2px solid #ffb6d5; padding: 28px 22px 18px 22px; }
+        QLabel, QTextEdit { color: #e573b4; font-family: '幼圆', '微软雅黑', Arial, sans-serif; font-size: 1.18em; }
     ''',
     'simple': '''
-        QFrame.card { background: #fff; border-radius: 32px; border: 1.5px solid #e0e0e0; padding: 32px 28px 24px 28px; }
-        QLabel, QTextEdit { color: #1976d2; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.22em; }
+        QFrame.card { background: #fff; border-radius: 24px; border: 1.5px solid #e0e0e0; padding: 24px 20px 16px 20px; }
+        QLabel, QTextEdit { color: #1976d2; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.16em; }
     ''',
     'emoji': '''
-        QFrame.card { background: #fffde7; border-radius: 36px; border: 3px dashed #ffd54f; padding: 36px 32px 28px 32px; }
-        QLabel, QTextEdit { color: #ff9800; font-family: '幼圆', '微软雅黑', Arial, sans-serif; font-size: 1.26em; }
+        QFrame.card { background: #fffde7; border-radius: 28px; border: 3px dashed #ffd54f; padding: 28px 22px 18px 22px; }
+        QLabel, QTextEdit { color: #ff9800; font-family: '幼圆', '微软雅黑', Arial, sans-serif; font-size: 1.18em; }
     ''',
     'macaron': '''
-        QFrame.card { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #ffe0f7, stop:1 #e0f7fa); border-radius: 36px; border: 3px solid #a259ff; padding: 36px 32px 28px 32px; }
-        QLabel, QTextEdit { color: #a259ff; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.26em; }
+        QFrame.card { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #ffe0f7, stop:1 #e0f7fa); border-radius: 28px; border: 3px solid #a259ff; padding: 28px 22px 18px 22px; }
+        QLabel, QTextEdit { color: #a259ff; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.18em; }
     ''',
     'sticker': '''
-        QFrame.card { background: #fff; border-radius: 32px; border: 3px dashed #43a047; padding: 32px 28px 24px 28px; }
-        QLabel, QTextEdit { color: #43a047; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.22em; }
+        QFrame.card { background: #fff; border-radius: 24px; border: 3px dashed #43a047; padding: 24px 20px 16px 20px; }
+        QLabel, QTextEdit { color: #43a047; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.16em; }
+    ''',
+    'retro': '''
+        QFrame.card { background: #fdf6e3; border-radius: 20px; border: 2px dashed #b58900; padding: 20px 16px 12px 16px; }
+        QLabel, QTextEdit { color: #b58900; font-family: 'Fira Mono', '微软雅黑', monospace; font-size: 1.12em; }
+    ''',
+    'apple': '''
+        QFrame.card { background: #fffbe7; border-radius: 20px; border: 2px solid #e1e1e1; padding: 20px 16px 12px 16px; }
+        QLabel, QTextEdit { color: #222; font-family: 'SF Pro Display', '微软雅黑', Arial, sans-serif; font-size: 1.12em; }
+    ''',
+    'cream': '''
+        QFrame.card { background: #fff0e6; border-radius: 28px; border: 2px solid #ffd6b3; padding: 28px 20px 14px 20px; }
+        QLabel, QTextEdit { color: #ff8c42; font-family: 'Comic Sans MS', '微软雅黑', Arial, sans-serif; font-size: 1.16em; }
     ''',
 }
 
@@ -513,15 +540,6 @@ class XHSWindow(QWidget):
         input_row.addWidget(self.hl_theme_combo)
         self.card_style_label = QLabel(t['card_style'])
         self.card_style_combo = QComboBox()
-        # 增加带emoji的缩略图
-        def emoji_icon(emoji):
-            pix = QPixmap(32, 32)
-            pix.fill(Qt.transparent)
-            painter = QPainter(pix)
-            painter.setFont(QFont('Segoe UI Emoji', 20))
-            painter.drawText(pix.rect(), Qt.AlignCenter, emoji)
-            painter.end()
-            return QIcon(pix)
         style_icons = {
             '极简黑白': emoji_icon('⬛'),
             '杂志卡片': emoji_icon('📰'),
@@ -531,19 +549,29 @@ class XHSWindow(QWidget):
             '卡哇伊风格': emoji_icon('🎀'),
             '简约清新风': emoji_icon('💧'),
             'emoji风': emoji_icon('😃'),
-            '马卡龙风': emoji_icon('🍬'),
+            '马卡龙风': emoji_icon('��'),
             '贴纸风': emoji_icon('📎'),
+            '复古学习感': emoji_icon('📚'),
+            '苹果备忘录': emoji_icon('🍏'),
+            '奶油胶风': emoji_icon('🧁'),
         }
         self.card_style_combo.clear()
         for style in STYLE_MAP.keys():
             icon = style_icons.get(style, QIcon())
             self.card_style_combo.addItem(icon, style)
         self.card_style_combo.currentIndexChanged.connect(self.on_card_style_change)
+        # 主题预览区
+        self.theme_preview = QLabel()
+        self.theme_preview.setFixedSize(120, 80)
+        self.theme_preview.setStyleSheet('border:1.5px solid #e0e0e0; border-radius:16px; background:#fff;')
+        self.update_theme_preview()
+        self.card_style_combo.currentIndexChanged.connect(self.update_theme_preview)
+        input_row.addWidget(self.card_style_label)
+        input_row.addWidget(self.card_style_combo)
+        input_row.addWidget(self.theme_preview)
         self.beautify_btn = QPushButton(t['beautify'])
         self.beautify_btn.setToolTip('自动选择推荐模板和美化参数')
         self.beautify_btn.clicked.connect(self.handle_beautify)
-        input_row.addWidget(self.card_style_label)
-        input_row.addWidget(self.card_style_combo)
         input_row.addWidget(self.beautify_btn)
         input_card.setLayout(input_row)
         layout.addWidget(input_card)
@@ -829,9 +857,21 @@ class XHSWindow(QWidget):
                 export_btn.setFixedWidth(120)
                 export_btn.setStyleSheet('font-size:1.08em;')
                 export_btn.clicked.connect(lambda _, idx=i: self.export_single_image(idx))
+                # 新增复制内容按钮
+                copy_content_btn = QPushButton('复制内容')
+                copy_content_btn.setFixedWidth(100)
+                copy_content_btn.setStyleSheet('font-size:1.08em;')
+                copy_content_btn.clicked.connect(lambda _, idx=i: self.copy_thumb_content(idx))
+                # 新增复制图片按钮
+                copy_img_btn = QPushButton('复制图片')
+                copy_img_btn.setFixedWidth(100)
+                copy_img_btn.setStyleSheet('font-size:1.08em;')
+                copy_img_btn.clicked.connect(lambda _, idx=i: self.copy_card_image(idx))
                 btn_row.addStretch(1)
                 btn_row.addWidget(edit_btn)
                 btn_row.addWidget(export_btn)
+                btn_row.addWidget(copy_content_btn)
+                btn_row.addWidget(copy_img_btn)
                 btn_row.addStretch(1)
                 card_layout.addLayout(btn_row)
                 # 内容摘要与字数
@@ -898,9 +938,21 @@ class XHSWindow(QWidget):
                 export_btn.setFixedWidth(120)
                 export_btn.setStyleSheet('font-size:1.08em;')
                 export_btn.clicked.connect(lambda _, idx=i: self.export_single_image(idx))
+                # 新增复制内容按钮
+                copy_content_btn = QPushButton('复制内容')
+                copy_content_btn.setFixedWidth(100)
+                copy_content_btn.setStyleSheet('font-size:1.08em;')
+                copy_content_btn.clicked.connect(lambda _, idx=i: self.copy_thumb_content(idx))
+                # 新增复制图片按钮
+                copy_img_btn = QPushButton('复制图片')
+                copy_img_btn.setFixedWidth(100)
+                copy_img_btn.setStyleSheet('font-size:1.08em;')
+                copy_img_btn.clicked.connect(lambda _, idx=i: self.copy_card_image(idx))
                 btn_row.addStretch(1)
                 btn_row.addWidget(edit_btn)
                 btn_row.addWidget(export_btn)
+                btn_row.addWidget(copy_content_btn)
+                btn_row.addWidget(copy_img_btn)
                 btn_row.addStretch(1)
                 card_layout.addLayout(btn_row)
                 # 内容摘要与字数
@@ -1357,6 +1409,77 @@ class XHSWindow(QWidget):
         if 0 <= idx < len(self.preview_md_blocks):
             content = self.preview_md_blocks[idx]
             QApplication.clipboard().setText(content)
+
+    def update_theme_preview(self):
+        # 用QPixmap+QPainter绘制主题缩略图
+        idx = self.card_style_combo.currentIndex()
+        style_type = list(STYLE_MAP.values())[idx]
+        pix = QPixmap(120, 80)
+        pix.fill(Qt.white)
+        painter = QPainter(pix)
+        # 背景色
+        bg = {
+            'minimal': QColor('#fff'),
+            'card': QColor('#f3f6fa'),
+            'gradient': QColor('#f8ffae'),
+            'fresh': QColor('#e0f7fa'),
+            'darktech': QColor('#23272e'),
+            'kawaii': QColor('#fff0fa'),
+            'simple': QColor('#fff'),
+            'emoji': QColor('#fffde7'),
+            'macaron': QColor('#ffe0f7'),
+            'sticker': QColor('#fff'),
+            'retro': QColor('#fdf6e3'),
+            'apple': QColor('#fffbe7'),
+            'cream': QColor('#fff0e6'),
+        }.get(style_type, QColor('#fff'))
+        painter.setBrush(bg)
+        painter.setPen(Qt.NoPen)
+        painter.drawRoundedRect(5, 5, 110, 70, 16, 16)
+        # 边框
+        border = {
+            'minimal': QColor('#e0e0e0'),
+            'card': QColor('#1976d2'),
+            'gradient': QColor('#43c6ac'),
+            'fresh': QColor('#4dd0e1'),
+            'darktech': QColor('#44475a'),
+            'kawaii': QColor('#ffb6d5'),
+            'simple': QColor('#e0e0e0'),
+            'emoji': QColor('#ffd54f'),
+            'macaron': QColor('#a259ff'),
+            'sticker': QColor('#43a047'),
+            'retro': QColor('#b58900'),
+            'apple': QColor('#e1e1e1'),
+            'cream': QColor('#ffd6b3'),
+        }.get(style_type, QColor('#e0e0e0'))
+        pen = painter.pen()
+        pen.setColor(border)
+        pen.setWidth(2)
+        painter.setPen(pen)
+        painter.drawRoundedRect(5, 5, 110, 70, 16, 16)
+        # 标题
+        painter.setPen(QColor('#222'))
+        painter.setFont(QFont('微软雅黑', 10, QFont.Bold))
+        painter.drawText(15, 35, list(STYLE_MAP.keys())[idx])
+        # 示例内容
+        painter.setFont(QFont('微软雅黑', 8))
+        painter.drawText(15, 55, '主题预览')
+        painter.end()
+        self.theme_preview.setPixmap(pix)
+
+    def copy_card_image(self, idx):
+        if 0 <= idx < len(self.preview_webviews):
+            img = self.preview_webviews[idx].grab()
+            QApplication.clipboard().setPixmap(img)
+
+def emoji_icon(emoji):
+    pix = QPixmap(32, 32)
+    pix.fill(Qt.transparent)
+    painter = QPainter(pix)
+    painter.setFont(QFont('Segoe UI Emoji', 20))
+    painter.drawText(pix.rect(), Qt.AlignCenter, emoji)
+    painter.end()
+    return QIcon(pix)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
