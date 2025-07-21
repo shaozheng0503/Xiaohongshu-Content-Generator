@@ -150,30 +150,30 @@ THEME_QSS = {
     '极简白': '''
         QWidget { background: #f6f8fa; font-family: "微软雅黑", Arial, Roboto, sans-serif; }
         QLabel#LogoLabel { margin: 0 auto; }
-        QLabel { color: #222; font-size: 1.15em; }
-        QLineEdit, QTextEdit { border: 2px solid #e0e0e0; border-radius: 14px; padding: 10px; background: #fff; font-size: 1.1em; }
-        QPushButton { background: #1976d2; color: #fff; border-radius: 22px; padding: 12px 36px; font-size: 1.15em; margin: 0 12px; font-weight: 600; box-shadow: 0 2px 12px #e3eafc; letter-spacing: 1px; }
+        QLabel { color: #111; font-size: 1.25em; font-weight: 500; }
+        QLineEdit, QTextEdit { border: 2px solid #d0d0d0; border-radius: 18px; padding: 14px; background: #fff; font-size: 1.18em; color: #222; font-weight: 500; }
+        QPushButton { background: #1976d2; color: #fff; border-radius: 26px; padding: 16px 44px; font-size: 1.22em; margin: 0 16px; font-weight: 700; box-shadow: 0 4px 18px #e3eafc; letter-spacing: 1px; }
         QPushButton:hover { background: #1256a6; }
-        QComboBox, QSpinBox { border: 2px solid #e0e0e0; border-radius: 14px; padding: 8px; background: #fff; font-size: 1.1em; }
-        QProgressBar { border: 2px solid #e0e0e0; border-radius: 14px; text-align: center; background: #f3f6fa; }
+        QComboBox, QSpinBox { border: 2px solid #d0d0d0; border-radius: 16px; padding: 10px; background: #fff; font-size: 1.18em; color: #222; font-weight: 500; }
+        QProgressBar { border: 2px solid #d0d0d0; border-radius: 16px; text-align: center; background: #f3f6fa; font-size: 1.1em; }
         QProgressBar::chunk { background: #1976d2; }
-        QFrame.card { background: #fff; border-radius: 28px; box-shadow: 0 6px 32px #dbeafe; margin: 2.5em 1.5em; padding: 2.5em 2em 2em 2em; border: 1.5px solid #e0e0e0; }
-        QFrame#card:hover { box-shadow: 0 12px 48px #b3c6e0; }
-        QFrame.line { border-top: 2px solid #e0e0e0; margin: 1em 0; }
+        QFrame.card { background: #fff; border-radius: 32px; box-shadow: 0 8px 36px #dbeafe; margin: 3em 2em; padding: 3em 2.5em 2.5em 2.5em; border: 2px solid #d0d0d0; }
+        QFrame#card:hover { box-shadow: 0 16px 56px #b3c6e0; }
+        QFrame.line { border-top: 2px solid #d0d0d0; margin: 1.5em 0; }
     ''',
     '暗色': '''
         QWidget { background: #23272e; font-family: "微软雅黑", Arial, Roboto, sans-serif; }
         QLabel#LogoLabel { margin: 0 auto; }
-        QLabel { color: #f8f8f2; font-size: 1.15em; }
-        QLineEdit, QTextEdit { border: 2px solid #44475a; border-radius: 14px; padding: 10px; background: #282a36; color: #f8f8f2; font-size: 1.1em; }
-        QPushButton { background: #44475a; color: #f8f8f2; border-radius: 22px; padding: 12px 36px; font-size: 1.15em; margin: 0 12px; font-weight: 600; box-shadow: 0 2px 12px #44475a; letter-spacing: 1px; }
+        QLabel { color: #f8f8f2; font-size: 1.25em; font-weight: 500; }
+        QLineEdit, QTextEdit { border: 2px solid #44475a; border-radius: 18px; padding: 14px; background: #282a36; color: #f8f8f2; font-size: 1.18em; font-weight: 500; }
+        QPushButton { background: #44475a; color: #f8f8f2; border-radius: 26px; padding: 16px 44px; font-size: 1.22em; margin: 0 16px; font-weight: 700; box-shadow: 0 4px 18px #44475a; letter-spacing: 1px; }
         QPushButton:hover { background: #6272a4; }
-        QComboBox, QSpinBox { border: 2px solid #44475a; border-radius: 14px; padding: 8px; background: #282a36; color: #f8f8f2; font-size: 1.1em; }
-        QProgressBar { border: 2px solid #44475a; border-radius: 14px; text-align: center; background: #282a36; }
+        QComboBox, QSpinBox { border: 2px solid #44475a; border-radius: 16px; padding: 10px; background: #282a36; color: #f8f8f2; font-size: 1.18em; font-weight: 500; }
+        QProgressBar { border: 2px solid #44475a; border-radius: 16px; text-align: center; background: #282a36; font-size: 1.1em; }
         QProgressBar::chunk { background: #6272a4; }
-        QFrame.card { background: #282a36; border-radius: 28px; box-shadow: 0 6px 32px #44475a; margin: 2.5em 1.5em; padding: 2.5em 2em 2em 2em; border: 1.5px solid #44475a; }
-        QFrame#card:hover { box-shadow: 0 12px 48px #6272a4; }
-        QFrame.line { border-top: 2px solid #44475a; margin: 1em 0; }
+        QFrame.card { background: #282a36; border-radius: 32px; box-shadow: 0 8px 36px #44475a; margin: 3em 2em; padding: 3em 2.5em 2.5em 2.5em; border: 2px solid #44475a; }
+        QFrame#card:hover { box-shadow: 0 16px 56px #6272a4; }
+        QFrame.line { border-top: 2px solid #44475a; margin: 1.5em 0; }
     ''',
     '蓝色': '''
         QWidget { background: #e3f2fd; font-family: "微软雅黑", Arial, Roboto, sans-serif; }
@@ -261,12 +261,12 @@ THEME_QSS = {
 
 CARD_QSS = {
     'minimal': '''
-        QFrame.card { background: #fff; border-radius: 24px; border: 1.5px solid #e0e0e0; padding: 24px 20px 16px 20px; }
-        QLabel, QTextEdit { color: #222; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.16em; }
+        QFrame.card { background: #fff; border-radius: 28px; border: 2px solid #d0d0d0; padding: 36px 28px 24px 28px; }
+        QLabel, QTextEdit { color: #111; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.28em; font-weight: 600; }
     ''',
     'card': '''
-        QFrame.card { background: #f3f6fa; border-radius: 28px; border: 2px solid #1976d2; padding: 28px 22px 18px 22px; }
-        QLabel, QTextEdit { color: #1976d2; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.18em; font-weight: bold; }
+        QFrame.card { background: #f3f6fa; border-radius: 32px; border: 2.5px solid #1976d2; padding: 44px 32px 28px 32px; }
+        QLabel, QTextEdit { color: #1976d2; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.32em; font-weight: bold; }
     ''',
     'gradient': '''
         QFrame.card { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #f8ffae, stop:1 #43c6ac); border-radius: 28px; border: 2px solid #43c6ac; padding: 28px 22px 18px 22px; }
@@ -455,27 +455,33 @@ class XHSWindow(QWidget):
         logo_row = QHBoxLayout()
         logo_label = QLabel()
         logo_label.setObjectName('LogoLabel')
-        # 支持自定义LOGO图片（如有logo.png）
+        # 支持自定义LOGO图片（如有logo.png或1.jpg）
         try:
-            logo_pix = QPixmap('logo.png')
+            logo_pix = QPixmap('xhs-tools/1.jpg')
             if not logo_pix.isNull():
                 logo_label.setPixmap(logo_pix.scaled(40, 40))
             else:
-                logo_label.setText('🪐')
+                logo_pix2 = QPixmap('logo.png')
+                if not logo_pix2.isNull():
+                    logo_label.setPixmap(logo_pix2.scaled(40, 40))
+                else:
+                    logo_label.setText('🪐')
         except Exception:
             logo_label.setText('🪐')
         logo_label.setStyleSheet('font-size: 2.5em; margin-bottom: 0.7em;')
         logo_label.setAlignment(Qt.AlignLeft)
+        # 设置应用窗口图标
+        self.setWindowIcon(QIcon('xhs-tools/1.jpg'))
         logo_row.addWidget(logo_label)
         title = QLabel(t['title'])
-        title.setFont(QFont('微软雅黑', 22, QFont.Bold))
-        title.setStyleSheet('color:#FF2D55; letter-spacing:2px;')
+        title.setFont(QFont('微软雅黑', 26, QFont.Bold))
+        title.setStyleSheet('color:#FF2D55; letter-spacing:2px; font-size:2.2em; font-weight:800;')
         title.setAlignment(Qt.AlignCenter)
         logo_row.addWidget(title, stretch=1)
         logo_row.addStretch(1)
         logo_layout.addLayout(logo_row)
         desc = QLabel(t['desc'])
-        desc.setStyleSheet('font-size:1.18em;color:#555;text-align:center; margin-bottom:1.5em;')
+        desc.setStyleSheet('font-size:1.22em;color:#222;text-align:center; margin-bottom:2em; font-weight:500;')
         desc.setAlignment(Qt.AlignCenter)
         logo_layout.addWidget(desc)
         # 右上角语言切换
@@ -835,7 +841,7 @@ class XHSWindow(QWidget):
                 # 顶部信息
                 top_row = QHBoxLayout()
                 top_label = QLabel(f'第{i+1}张 / 共{total}张')
-                top_label.setStyleSheet('font-size:1.08em;color:#1976d2;font-weight:bold;letter-spacing:1px;')
+                top_label.setStyleSheet('font-size:1.18em;color:#1976d2;font-weight:700;letter-spacing:1px;')
                 top_row.addWidget(top_label)
                 top_row.addStretch(1)
                 card_layout.addLayout(top_row)
@@ -850,22 +856,22 @@ class XHSWindow(QWidget):
                 # 按钮区
                 btn_row = QHBoxLayout()
                 edit_btn = QPushButton('编辑')
-                edit_btn.setFixedWidth(100)
-                edit_btn.setStyleSheet('font-size:1.08em;')
+                edit_btn.setFixedWidth(120)
+                edit_btn.setStyleSheet('font-size:1.18em; font-weight:700; background:#1976d2; color:#fff; border-radius:16px;')
                 edit_btn.clicked.connect(lambda _, idx=i: self.edit_card(idx))
                 export_btn = QPushButton('导出本图')
-                export_btn.setFixedWidth(120)
-                export_btn.setStyleSheet('font-size:1.08em;')
+                export_btn.setFixedWidth(140)
+                export_btn.setStyleSheet('font-size:1.18em; font-weight:700; background:#1976d2; color:#fff; border-radius:16px;')
                 export_btn.clicked.connect(lambda _, idx=i: self.export_single_image(idx))
                 # 新增复制内容按钮
                 copy_content_btn = QPushButton('复制内容')
-                copy_content_btn.setFixedWidth(100)
-                copy_content_btn.setStyleSheet('font-size:1.08em;')
+                copy_content_btn.setFixedWidth(120)
+                copy_content_btn.setStyleSheet('font-size:1.18em; font-weight:700; background:#1976d2; color:#fff; border-radius:16px;')
                 copy_content_btn.clicked.connect(lambda _, idx=i: self.copy_thumb_content(idx))
                 # 新增复制图片按钮
                 copy_img_btn = QPushButton('复制图片')
-                copy_img_btn.setFixedWidth(100)
-                copy_img_btn.setStyleSheet('font-size:1.08em;')
+                copy_img_btn.setFixedWidth(120)
+                copy_img_btn.setStyleSheet('font-size:1.18em; font-weight:700; background:#1976d2; color:#fff; border-radius:16px;')
                 copy_img_btn.clicked.connect(lambda _, idx=i: self.copy_card_image(idx))
                 btn_row.addStretch(1)
                 btn_row.addWidget(edit_btn)
@@ -878,10 +884,15 @@ class XHSWindow(QWidget):
                 summary = md.strip().replace('\n', ' ')
                 summary = summary[:30] + ('...' if len(summary) > 30 else '')
                 stat_row = QHBoxLayout()
-                stat_row.addWidget(QLabel(f'摘要：{summary}'))
+                stat_summary = QLabel(f'摘要：{summary}')
+                stat_summary.setStyleSheet('font-size:1.28em; color:#000; font-weight:700; padding: 6px 18px 6px 0; line-height: 1.7;')
+                stat_row.addWidget(stat_summary)
                 stat_row.addStretch(1)
-                stat_row.addWidget(QLabel(f'字数：{len(md)}'))
+                stat_count = QLabel(f'字数：{len(md)}')
+                stat_count.setStyleSheet('font-size:1.28em; color:#000; font-weight:700; padding: 6px 0 6px 18px; line-height: 1.7;')
+                stat_row.addWidget(stat_count)
                 card_layout.addLayout(stat_row)
+                card_layout.addSpacing(12)
                 card.setLayout(card_layout)
                 self.preview_layout.addWidget(card)
                 self.preview_webviews.append(webview)
@@ -916,7 +927,7 @@ class XHSWindow(QWidget):
                 # 顶部信息
                 top_row = QHBoxLayout()
                 top_label = QLabel(f'第{i+1}张 / 共{n}张')
-                top_label.setStyleSheet('font-size:1.08em;color:#1976d2;font-weight:bold;letter-spacing:1px;')
+                top_label.setStyleSheet('font-size:1.18em;color:#1976d2;font-weight:700;letter-spacing:1px;')
                 top_row.addWidget(top_label)
                 top_row.addStretch(1)
                 card_layout.addLayout(top_row)
@@ -931,22 +942,22 @@ class XHSWindow(QWidget):
                 # 按钮区
                 btn_row = QHBoxLayout()
                 edit_btn = QPushButton('编辑')
-                edit_btn.setFixedWidth(100)
-                edit_btn.setStyleSheet('font-size:1.08em;')
+                edit_btn.setFixedWidth(120)
+                edit_btn.setStyleSheet('font-size:1.18em; font-weight:700; background:#1976d2; color:#fff; border-radius:16px;')
                 edit_btn.clicked.connect(lambda _, idx=i: self.edit_card(idx))
                 export_btn = QPushButton('导出本图')
-                export_btn.setFixedWidth(120)
-                export_btn.setStyleSheet('font-size:1.08em;')
+                export_btn.setFixedWidth(140)
+                export_btn.setStyleSheet('font-size:1.18em; font-weight:700; background:#1976d2; color:#fff; border-radius:16px;')
                 export_btn.clicked.connect(lambda _, idx=i: self.export_single_image(idx))
                 # 新增复制内容按钮
                 copy_content_btn = QPushButton('复制内容')
-                copy_content_btn.setFixedWidth(100)
-                copy_content_btn.setStyleSheet('font-size:1.08em;')
+                copy_content_btn.setFixedWidth(120)
+                copy_content_btn.setStyleSheet('font-size:1.18em; font-weight:700; background:#1976d2; color:#fff; border-radius:16px;')
                 copy_content_btn.clicked.connect(lambda _, idx=i: self.copy_thumb_content(idx))
                 # 新增复制图片按钮
                 copy_img_btn = QPushButton('复制图片')
-                copy_img_btn.setFixedWidth(100)
-                copy_img_btn.setStyleSheet('font-size:1.08em;')
+                copy_img_btn.setFixedWidth(120)
+                copy_img_btn.setStyleSheet('font-size:1.18em; font-weight:700; background:#1976d2; color:#fff; border-radius:16px;')
                 copy_img_btn.clicked.connect(lambda _, idx=i: self.copy_card_image(idx))
                 btn_row.addStretch(1)
                 btn_row.addWidget(edit_btn)
@@ -959,10 +970,15 @@ class XHSWindow(QWidget):
                 summary = md.strip().replace('\n', ' ')
                 summary = summary[:30] + ('...' if len(summary) > 30 else '')
                 stat_row = QHBoxLayout()
-                stat_row.addWidget(QLabel(f'摘要：{summary}'))
+                stat_summary = QLabel(f'摘要：{summary}')
+                stat_summary.setStyleSheet('font-size:1.28em; color:#000; font-weight:700; padding: 6px 18px 6px 0; line-height: 1.7;')
+                stat_row.addWidget(stat_summary)
                 stat_row.addStretch(1)
-                stat_row.addWidget(QLabel(f'字数：{len(md)}'))
+                stat_count = QLabel(f'字数：{len(md)}')
+                stat_count.setStyleSheet('font-size:1.28em; color:#000; font-weight:700; padding: 6px 0 6px 18px; line-height: 1.7;')
+                stat_row.addWidget(stat_count)
                 card_layout.addLayout(stat_row)
+                card_layout.addSpacing(12)
                 card.setLayout(card_layout)
                 self.preview_layout.addWidget(card)
                 self.preview_webviews.append(webview)
@@ -1226,8 +1242,13 @@ class XHSWindow(QWidget):
             progress.setVisible(True)
             progress.setMaximum(len(self.batch_tasks))
             progress.setValue(0)
-            for i, task in enumerate(self.batch_tasks):
-                # 生成分割内容
+            total = len(self.batch_tasks)
+            def export_one(i):
+                if i >= total:
+                    progress.setVisible(False)
+                    QMessageBox.information(self, '批量导出图片', f'已导出所有图片到 {save_dir}')
+                    return
+                task = self.batch_tasks[i]
                 split_n = self.split_spin.value() if hasattr(self, 'split_spin') else 3
                 card_style = self.get_style_type() if hasattr(self, 'get_style_type') else 'card'
                 theme = self.theme_combo.currentText() if hasattr(self, 'theme_combo') else '极简白'
@@ -1239,7 +1260,12 @@ class XHSWindow(QWidget):
                     n = split_n
                     chunk_size = (len(paras) + n - 1) // n
                     md_blocks = ['\n'.join(paras[j*chunk_size:(j+1)*chunk_size]) for j in range(n)]
-                for j, md in enumerate(md_blocks):
+                def export_subimg(j):
+                    if j >= len(md_blocks):
+                        progress.setValue(i+1)
+                        QTimer.singleShot(100, lambda: export_one(i+1))
+                        return
+                    md = md_blocks[j]
                     html = render_article_html(
                         task['title'],
                         markdown.markdown(md, extensions=['extra', 'codehilite']) if task['is_md'] else md,
@@ -1254,14 +1280,14 @@ class XHSWindow(QWidget):
                     webview.setMinimumWidth(600)
                     webview.setMaximumWidth(600)
                     webview.setMinimumHeight(800)
-                    def save_img(idx=i, subidx=j, wv=webview):
-                        img = wv.grab()
-                        fname = os.path.join(save_dir, f'batch_{idx+1}_{task["title"][:10]}_{subidx+1}.png')
+                    def save_img():
+                        img = webview.grab()
+                        fname = os.path.join(save_dir, f'batch_{i+1}_{task["title"][:10]}_{j+1}.png')
                         img.save(fname)
+                        QTimer.singleShot(100, lambda: export_subimg(j+1))
                     QTimer.singleShot(1000, save_img)
-                progress.setValue(i+1)
-            progress.setVisible(False)
-            QMessageBox.information(self, '批量导出图片', f'已导出所有图片到 {save_dir}')
+                export_subimg(0)
+            export_one(0)
         export_img_btn.clicked.connect(on_export_img)
         def on_beautify():
             split_n = self.split_spin.value() if hasattr(self, 'split_spin') else 3
