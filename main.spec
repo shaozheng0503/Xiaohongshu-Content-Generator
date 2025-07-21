@@ -5,7 +5,7 @@ a = Analysis(
     ['xhs-tools\\main.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[('xhs-tools\\1.jpg', 'xhs-tools')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
