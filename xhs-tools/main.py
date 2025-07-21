@@ -148,18 +148,18 @@ def split_markdown_blocks(content, n):
 
 THEME_QSS = {
     '极简白': '''
-        QWidget { background: #f6f8fa; font-family: "微软雅黑", Arial, Roboto, sans-serif; }
+        QWidget { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #f8f4ed, stop:1 #ffeeee); font-family: "微软雅黑", Arial, Roboto, sans-serif; }
         QLabel#LogoLabel { margin: 0 auto; }
-        QLabel { color: #111; font-size: 1.25em; font-weight: 500; }
-        QLineEdit, QTextEdit { border: 2px solid #d0d0d0; border-radius: 18px; padding: 14px; background: #fff; font-size: 1.18em; color: #222; font-weight: 500; }
-        QPushButton { background: #1976d2; color: #fff; border-radius: 26px; padding: 16px 44px; font-size: 1.22em; margin: 0 16px; font-weight: 700; box-shadow: 0 4px 18px #e3eafc; letter-spacing: 1px; }
-        QPushButton:hover { background: #1256a6; }
-        QComboBox, QSpinBox { border: 2px solid #d0d0d0; border-radius: 16px; padding: 10px; background: #fff; font-size: 1.18em; color: #222; font-weight: 500; }
-        QProgressBar { border: 2px solid #d0d0d0; border-radius: 16px; text-align: center; background: #f3f6fa; font-size: 1.1em; }
-        QProgressBar::chunk { background: #1976d2; }
-        QFrame.card { background: #fff; border-radius: 32px; box-shadow: 0 8px 36px #dbeafe; margin: 3em 2em; padding: 3em 2.5em 2.5em 2.5em; border: 2px solid #d0d0d0; }
-        QFrame#card:hover { box-shadow: 0 16px 56px #b3c6e0; }
-        QFrame.line { border-top: 2px solid #d0d0d0; margin: 1.5em 0; }
+        QLabel { color: #222; font-size: 1.28em; font-weight: 600; letter-spacing: 0.5px; }
+        QLineEdit, QTextEdit { border: 2px solid #e1cad2; border-radius: 20px; padding: 16px; background: #fff; font-size: 1.18em; color: #222; font-weight: 500; box-shadow: 0 3px 10px rgba(255,151,172,0.08); }
+        QPushButton { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #ff9e80, stop:1 #ff5252); color: #fff; border-radius: 18px; padding: 16px 44px; font-size: 1.22em; margin: 0 16px; font-weight: 700; box-shadow: 0 4px 18px #ffd6ec; letter-spacing: 1px; transition: background 0.3s, box-shadow 0.3s; }
+        QPushButton:hover { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #ff7eb3, stop:1 #ff5252); box-shadow: 0 8px 24px #ffd6ec; }
+        QComboBox, QSpinBox { border: 2px solid #e1cad2; border-radius: 16px; padding: 12px; background: #fff; font-size: 1.18em; color: #222; font-weight: 500; }
+        QProgressBar { border: 2px solid #f2e5e8; border-radius: 10px; text-align: center; background: #f2e5e8; font-size: 1.1em; height: 10px; }
+        QProgressBar::chunk { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #ff9e80, stop:1 #ff5252); border-radius: 10px; }
+        QFrame.card { background: #fff; border-radius: 24px; box-shadow: 0 10px 30px rgba(255,151,172,0.10), 0 2px 8px rgba(0,0,0,0.04); margin: 2.5em 1.5em; padding: 2.5em 2em 2em 2em; border: 1.5px solid #e1cad2; transition: box-shadow 0.3s, transform 0.3s; }
+        QFrame#card:hover { box-shadow: 0 20px 40px #ffd6ec, 0 8px 16px rgba(0,0,0,0.08); transform: translateY(-5px) scale(1.01); }
+        QFrame.line { border-top: 2px solid #e8e0dc; margin: 1.5em 0; background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #fff, stop:1 #e8e0dc); }
     ''',
     '暗色': '''
         QWidget { background: #23272e; font-family: "微软雅黑", Arial, Roboto, sans-serif; }
@@ -261,12 +261,12 @@ THEME_QSS = {
 
 CARD_QSS = {
     'minimal': '''
-        QFrame.card { background: #fff; border-radius: 28px; border: 2px solid #d0d0d0; padding: 36px 28px 24px 28px; }
-        QLabel, QTextEdit { color: #111; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.28em; font-weight: 600; }
+        QFrame.card { background: #fff; border-radius: 22px; border: 1.5px solid #e1cad2; padding: 36px 28px 24px 28px; box-shadow: 0 6px 18px rgba(255,151,172,0.10); transition: box-shadow 0.3s, transform 0.3s; }
+        QLabel, QTextEdit { color: #222; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.22em; font-weight: 600; }
     ''',
     'card': '''
-        QFrame.card { background: #f3f6fa; border-radius: 32px; border: 2.5px solid #1976d2; padding: 44px 32px 28px 32px; }
-        QLabel, QTextEdit { color: #1976d2; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.32em; font-weight: bold; }
+        QFrame.card { background: #fffdf8; border-radius: 28px; border: 2px solid #ffbdbd; padding: 44px 32px 28px 32px; box-shadow: 0 12px 32px rgba(255,151,172,0.13); transition: box-shadow 0.3s, transform 0.3s; }
+        QLabel, QTextEdit { color: #e60023; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.28em; font-weight: bold; }
     ''',
     'gradient': '''
         QFrame.card { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #f8ffae, stop:1 #43c6ac); border-radius: 28px; border: 2px solid #43c6ac; padding: 28px 22px 18px 22px; }
@@ -429,6 +429,7 @@ class XHSWindow(QWidget):
         self.setMinimumSize(1100, 900)
         self.setWindowIcon(QIcon())
         self.preview_mode = 'horizontal'
+        self.badge_text = '原创'  # 新增角标内容
         self.init_ui()
         self.last_content = ''
         self.last_title = ''
@@ -468,7 +469,7 @@ class XHSWindow(QWidget):
                     logo_label.setText('🪐')
         except Exception:
             logo_label.setText('🪐')
-        logo_label.setStyleSheet('font-size: 2.5em; margin-bottom: 0.7em;')
+        logo_label.setStyleSheet('font-size: 2.5em; margin-bottom: 0.7em; background: rgba(255,255,255,0.92); border-radius: 10px; padding: 4px 12px; box-shadow: 0 2px 8px rgba(230,0,35,0.13);')
         logo_label.setAlignment(Qt.AlignLeft)
         # 设置应用窗口图标
         self.setWindowIcon(QIcon('xhs-tools/1.jpg'))
@@ -498,7 +499,7 @@ class XHSWindow(QWidget):
         # 2. 输入区卡片化
         input_card = QFrame()
         input_card.setObjectName('input_card')
-        input_card.setStyleSheet('QFrame#input_card { background: #fff; border-radius: 18px; box-shadow: 0 2px 12px #ffd6ec; border: 1.5px solid #ffb6d5; padding: 18px 18px 8px 18px; }')
+        input_card.setStyleSheet('QFrame#input_card { background: #fff; border-radius: 20px; box-shadow: 0 5px 15px -3px rgba(255,151,172,0.10), 0 3px 6px -2px rgba(0,0,0,0.05); border: 1.5px solid #e1cad2; padding: 22px 22px 10px 22px; transition: box-shadow 0.2s, transform 0.2s; } QFrame#input_card:hover { box-shadow: 0 8px 20px -4px rgba(255,151,172,0.15), 0 4px 8px -3px rgba(0,0,0,0.08); transform: translateY(-2px); }')
         input_row = QHBoxLayout()
         input_row.setSpacing(12)
         self.link_input = QLineEdit()
@@ -523,6 +524,12 @@ class XHSWindow(QWidget):
         self.hl_theme_combo = QComboBox()
         self.hl_theme_combo.addItems(list(HIGHLIGHT_THEMES.keys()))
         self.hl_theme_combo.currentIndexChanged.connect(self.on_highlight_theme_change)
+        self.badge_label = QLabel('角标内容:')
+        self.badge_input = QLineEdit()
+        self.badge_input.setText(self.badge_text)
+        self.badge_input.setFixedWidth(100)
+        self.badge_input.setStyleSheet('font-size:1.15em; color:#111; font-weight:500;')
+        self.badge_input.textChanged.connect(self.on_badge_text_change)
         input_row.addWidget(self.link_input)
         input_row.addWidget(self.parse_btn)
         input_row.addWidget(self.upload_btn)
@@ -544,6 +551,8 @@ class XHSWindow(QWidget):
         input_row.addWidget(self.hl_checkbox)
         input_row.addWidget(self.hl_theme_label)
         input_row.addWidget(self.hl_theme_combo)
+        input_row.addWidget(self.badge_label)
+        input_row.addWidget(self.badge_input)
         self.card_style_label = QLabel(t['card_style'])
         self.card_style_combo = QComboBox()
         style_icons = {
@@ -658,6 +667,7 @@ class XHSWindow(QWidget):
         btn_bar_widget = QWidget()
         btn_bar_widget.setLayout(btn_row)
         btn_bar_widget.setFixedHeight(60)
+        btn_bar_widget.setStyleSheet('background: rgba(255,255,255,0.94); border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; box-shadow: 0 -2px 10px rgba(255,151,172,0.04), inset 0 1px 0 rgba(255,255,255,0.7);')
         layout.addWidget(btn_bar_widget)
         self.setLayout(layout)
         self.apply_theme(theme_name)
@@ -829,7 +839,8 @@ class XHSWindow(QWidget):
                     self.get_style_type(),
                     is_html=True,
                     highlight=self.highlight,
-                    highlight_theme=self.highlight_theme
+                    highlight_theme=self.highlight_theme,
+                    badge_text=self.badge_text
                 )
                 card = QFrame()
                 card.setObjectName('card')
@@ -915,7 +926,8 @@ class XHSWindow(QWidget):
                     self.last_desc if i == 0 else '',
                     self.get_style_type(),
                     highlight=self.highlight,
-                    highlight_theme=self.highlight_theme
+                    highlight_theme=self.highlight_theme,
+                    badge_text=self.badge_text
                 )
                 card = QFrame()
                 card.setObjectName('card')
@@ -1019,7 +1031,8 @@ class XHSWindow(QWidget):
                     self.get_style_type(),
                     is_html=True,
                     highlight=self.highlight,
-                    highlight_theme=self.highlight_theme
+                    highlight_theme=self.highlight_theme,
+                    badge_text=self.badge_text
                 )
             else:
                 html = render_article_html(
@@ -1028,7 +1041,8 @@ class XHSWindow(QWidget):
                     self.last_desc if idx == 0 else '',
                     self.get_style_type(),
                     highlight=self.highlight,
-                    highlight_theme=self.highlight_theme
+                    highlight_theme=self.highlight_theme,
+                    badge_text=self.badge_text
                 )
             self.preview_webviews[idx].setHtml(html)
 
@@ -1497,6 +1511,10 @@ class XHSWindow(QWidget):
         if 0 <= idx < len(self.preview_webviews):
             img = self.preview_webviews[idx].grab()
             QApplication.clipboard().setPixmap(img)
+
+    def on_badge_text_change(self, text):
+        self.badge_text = text if text.strip() else '原创'
+        self.refresh_previews()
 
 def emoji_icon(emoji):
     pix = QPixmap(32, 32)

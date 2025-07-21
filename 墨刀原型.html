@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小红书创作工具箱</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=ZCOOL+XiaoWei&display=swap">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8f4ed, #ffeeee);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: -apple-system, Inter, 'PingFang SC', sans-serif;
+            padding: 20px;
+        }
+        
+        /* 容器和边界处理 */
+        .app-frame {
+            width: 375px;
+            height: 812px;
+            border-radius: 24px;
+            border: 1px solid #ddd;
+            box-shadow: 
+                0 15px 30px -5px rgba(0, 0, 0, 0.15), 
+                0 10px 15px -6px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            background: linear-gradient(175deg, #fffdf8 65%, #ffeeed 100%);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .app-frame:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 20px 35px -8px rgba(0, 0, 0, 0.2), 
+                0 15px 20px -10px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        }
+        
+        /* 模块分隔线 */
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #e8e0dc, transparent);
+            margin: 10px 16px;
+        }
+        
+        /* 标题区域 */
+        .header-bar {
+            height: 56px;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .logo {
+            background: linear-gradient(45deg, #e60023, #ff5252);
+            border-radius: 10px;
+            padding: 4px 12px;
+            font-weight: 800;
+            font-size: 18px;
+            color: white;
+            letter-spacing: -0.5px;
+            box-shadow: 0 2px 8px rgba(230, 0, 35, 0.3);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        .action-btns {
+            display: flex;
+            gap: 10px;
+            margin-left: auto;
+        }
+        
+        .btn-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 19px;
+            background: #f8f1f1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .btn-icon:hover {
+            transform: translateY(-3px) scale(1.05);
+            background: #fbdddd;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* 主要内容区 */
+        .content-area {
+            flex: 1;
+            padding: 16px 12px;
+            overflow-y: auto;
+            position: relative;
+            scrollbar-width: none; 
+        }
+        
+        .content-area::-webkit-scrollbar {
+            display: none;
+        }
+        
+        /* 输入区域容器 */
+        .input-card {
+            background: white;
+            border-radius: 16px;
+            padding: 18px;
+            box-shadow: 
+                0 5px 15px -3px rgba(0, 0, 0, 0.1), 
+                0 3px 6px -2px rgba(0, 0, 0, 0.05),
+                inset 0 -1px 4px rgba(0,0,0,0.03);
+            margin-bottom: 20px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .input-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 8px 20px -4px rgba(0, 0, 0, 0.12), 
+                0 4px 8px -3px rgba(0, 0, 0, 0.08),
+                inset 0 -1px 4px rgba(0,0,0,0.03);
+        }
+        
+        .card-title {
+            font-weight: 700;
+            font-size: 16px;
+            color: #424242;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        
+        .tag {
+            background: linear-gradient(45deg, #d667ff, #9a68fa);
+            color: white;
+            border-radius: 12px;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+            box-shadow: 0 2px 6px rgba(154, 104, 250, 0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(154, 104, 250, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(154, 104, 250, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(154, 104, 250, 0); }
+        }
+        
+        .drop-area {
+            border: 2px dashed #e1cad2;
+            border-radius: 14px;
+            background: #fdfafb;
+            height: 130px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .drop-area:hover {
+            background: #fff3f7;
+            border-color: #ff97ac;
+            transform: scale(1.01);
+            box-shadow: 0 5px 15px rgba(255, 151, 172, 0.15);
+        }
+        
+        .progress-container {
+            margin-top: 18px;
+            height: 6px;
+            border-radius: 8px;
+            background: #f2e5e8;
+            overflow: hidden;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 65%;
+            background: linear-gradient(90deg, #ff9e80, #ff5252);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(255,82,82,0.3);
+            transition: width 0.5s ease;
+        }
+        
+        .progress-bar::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.4), 
+                transparent);
+            animation: wave 1.8s linear infinite;
+        }
+        
+        /* 模板预览 */
+        .template-scroll {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 0px 4px 10px;
+            scrollbar-width: none;
+        }
+        
+        .template-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .template-item {
+            flex: 0 0 100px;
+            height: 135px;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+            position: relative; 
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .template-item:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.16);
+        }
+        
+        .template-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 10px;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            color: white;
+            font-size: 12px;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.15);
+        }
+        
+        .template-name {
+            font-family: "ZCOOL KuaiLe", cursive; 
+            text-align: center;
+            font-size: 14px;
+            font-weight: 400;
+            margin-top: 8px;
+            transform: rotate(-1deg);
+            letter-spacing: 1px;
+        }
+        
+        /* 编辑控制区 */
+        .control-panel {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            padding: 10px;
+            background: linear-gradient(145deg, #fffcf9, #fff7f7);
+            border-radius: 16px;
+            margin: 20px 0;
+            border: 1px solid #f4e5e1;
+            box-shadow: 
+                0 4px 12px rgba(0,0,0,0.05),
+                inset 0 1px 0 rgba(255,255,255,0.8);
+        }
+        
+        .control-btn {
+            background: white;
+            border-radius: 14px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            text-align: center;
+            box-shadow: 
+                0 3px 6px rgba(0,0,0,0.06),
+                inset 0 1px 0 rgba(255,255,255,1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #f2e8e8;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+        }
+        
+        .control-btn.active {
+            background: #fff1f1;
+            border-color: #ffbdbd;
+            color: #d00000;
+            box-shadow: 
+                0 3px 8px rgba(208,0,0,0.15),
+                inset 0 -1px 0 rgba(255,255,255,0.7);
+        }
+        
+        /* 输出预览区 */
+        .preview-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 
+                0 10px 20px rgba(0,0,0,0.08),
+                0 4px 8px rgba(0,0,0,0.04);
+            margin-top: 10px;
+            height: 250px;
+            display: flex;
+            flex-direction: column;
+            transform-origin: center;
+            transition: all 0.3s ease;
+        }
+        
+        .preview-card:hover {
+            transform: scale(1.02);
+            box-shadow: 
+                0 15px 30px rgba(0,0,0,0.12),
+                0 8px 16px rgba(0,0,0,0.08);
+        }
+        
+        .preview-header {
+            padding: 10px 16px;
+            background: linear-gradient(90deg, #fff, #fff5f5);
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            border-bottom: 1px solid #f1e4e4;
+        }
+        
+        .preview-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+        
+        .preview-img {
+            border-radius: 10px;
+            height: 110px;
+            object-fit: cover;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .preview-img:hover {
+            transform: scale(1.02);
+        }
+        
+        .preview-text {
+            margin-top: 15px;
+            line-height: 1.6;
+            background: linear-gradient(145deg, #fcf5ff, #fcf8ff);
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            box-shadow: 
+                0 3px 8px rgba(0,0,0,0.05),
+                inset 0 1px 0 rgba(255,255,255,0.8);
+        }
+        
+        .tool-tip {
+            position: absolute;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+        }
+        
+        .tool-tip::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-style: solid;
+            border-width: 8px 8px 0 8px;
+            border-color: rgba(0,0,0,0.8) transparent transparent transparent;
+        }
+        
+        /* 底部操作栏 */
+        .footer-bar {
+            height: 80px;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(8px);
+            display: flex;
+            border-top: 1px solid #f4e6e6;
+            border-bottom-left-radius: 24px;
+            border-bottom-right-radius: 24px;
+            box-shadow: 
+                0 -2px 10px rgba(0, 0, 0, 0.04),
+                inset 0 1px 0 rgba(255,255,255,0.7);
+        }
+        
+        .action-grid {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4px;
+        }
+        
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            padding: 8px 0;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .action-btn:hover {
+            background: #fff1f1;
+            transform: translateY(-2px);
+        }
+        
+        .action-btn:active {
+            transform: translateY(0);
+        }
+        
+        .action-btn::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: -100%;
+            background: linear-gradient(90deg, 
+                transparent,
+                rgba(255,255,255,0.4),
+                transparent);
+            transition: 0.5s;
+        }
+        
+        .action-btn:hover::after {
+            left: 100%;
+        }
+        
+        .switch-container {
+            display: flex;
+            align-items: center;
+            position: relative;
+            width: 46px;
+            height: 26px;
+            background-color: #e3d4e2;
+            border-radius: 13px;
+            transition: background 0.3s ease;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+        
+        .switch-handle {
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            left: 2px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .switch-container.active {
+            background: linear-gradient(90deg, #ff9ebb, #ff7eb3);
+        }
+        
+        .switch-container.active .switch-handle {
+            left: 22px;
+            box-shadow: 0 2px 5px rgba(255,126,179,0.3);
+        }
+        
+        @keyframes wave {
+            0% { 
+                left: -100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-frame">
+        <!-- 顶部功能区 -->
+        <div class="header-bar">
+            <div class="logo">RED TOOL</div>
+            <div class="action-btns">
+                <div class="btn-icon">
+                    <iconify-icon icon="mdi:earth" style="color: #555; font-size: 20px;"></iconify-icon>
+                </div>
+                <div class="btn-icon">
+                    <iconify-icon icon="mdi:grid" style="color: #555; font-size: 20px;"></iconify-icon>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 主要滚动内容区域 -->
+        <div class="content-area">
+            <!-- 内容转换区 -->
+            <div class="input-card">
+                <div class="card-title">
+                    内容转换区
+                    <div class="tag">处理中</div>
+                </div>
+                <div class="drop-area" id="dropZone">
+                    <iconify-icon icon="mdi:cloud-upload" style="font-size: 32px; color: #e6798a;"></iconify-icon>
+                    <p style="font-size: 14px; color: #888; margin-top: 8px;">
+                        拖拽内容到这里或直接粘贴文本
+                    </p>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar"></div>
+                </div>
+            </div>
+            
+            <!-- 模板预览区 -->
+            <h3 class="card-title" style="padding: 0 8px; margin-bottom: 5px;">选择样式模板</h3>
+            <div class="template-scroll">
+                <div>
+                    <div class="template-item">
+                        <img src="/ai/uploads/ai_pics/3/37818/aigp_1753080816.jpeg" alt="Minimalist style template preview" id="1" class="h-full w-full object-cover">
+                        <div class="template-overlay">当前选择</div>
+                    </div>
+                    <div class="template-name">极简风</div>
+                </div>
+                <div>
+                    <div class="template-item">
+                        <img src="/ai/uploads/ai_pics/3/37819/aigp_1753080818.jpeg" alt="Magazine layout template preview" id="2" class="h-full w-full object-cover">
+                    </div>
+                    <div class="template-name">杂志风</div>
+                </div>
+                <div>
+                    <div class="template-item">
+                        <img src="/ai/uploads/ai_pics/3/37820/aigp_1753080821.jpeg" alt="Dreamy mood template preview" id="3" class="h-full w-full object-cover">
+                    </div>
+                    <div class="template-name">梦幻风</div>
+                </div>
+                <div>
+                    <div class="template-item">
+                        <img src="/ai/uploads/ai_pics/3/37821/aigp_1753080823.jpeg" alt="Foodie style template preview" id="4" class="h-full w-full object-cover">
+                    </div>
+                    <div class="template-name">美食风</div>
+                </div>
+                <div>
+                    <div class="template-item">
+                        <img src="/ai/uploads/ai_pics/3/37822/aigp_1753080825.jpeg" alt="Travel theme template preview" id="5" class="h-full w-full object-cover">
+                    </div>
+                    <div class="template-name">旅行风</div>
+                </div>
+            </div>
+            
+            <div class="section-divider"></div>
+            
+            <!-- 编辑控制区 -->
+            <div class="control-panel">
+                <div class="control-btn active">
+                    <iconify-icon icon="mdi:text-short" style="font-size: 20px; margin-bottom: 4px;"></iconify-icon>
+                    分段控制
+                </div>
+                <div class="control-btn">
+                    <iconify-icon icon="mdi:emoticon-happy" style="font-size: 20px; margin-bottom: 4px;"></iconify-icon>
+                    Emoji添加
+                </div>
+                <div class="control-btn">
+                    <iconify-icon icon="mdi:superscript" style="font-size: 20px; margin-bottom: 4px;"></iconify-icon>
+                    角标/标签
+                </div>
+                <div class="control-btn">
+                    <iconify-icon icon="mdi:marker" style="font-size: 20px; margin-bottom: 4px;"></iconify-icon>
+                    文字高亮
+                </div>
+            </div>
+            
+            <!-- 输出预览区 -->
+            <div class="card-title" style="margin-bottom: 10px;">
+                效果预览
+                <div style="margin-left: auto; font-size: 12px; color: #ff5252;">
+                    <iconify-icon icon="mdi:pin" style="margin-right: 4px;"></iconify-icon>
+                    长按图片可保存
+                </div>
+            </div>
+            <div class="preview-card">
+                <div class="preview-header">
+                    <span style="color: #e60023; font-weight: 500;">
+                        预览模式
+                    </span>
+                    <span>
+                        <iconify-icon icon="mdi:fullscreen" style="color: #888; margin-right: 12px;"></iconify-icon>
+                        <iconify-icon icon="mdi:arrow-expand" style="color: #888;"></iconify-icon>
+                    </span>
+                </div>
+                <div class="preview-content">
+                    <img src="/ai/uploads/ai_pics/3/37823/aigp_1753080827.jpeg" alt="Preview of transformed content with cafe latte image" id="6" class="preview-img w-full">
+                    <div class="preview-text">
+                        <p>今天发现了一家宝藏咖啡店！☕️ 藏在巷子深处但绝对值得探索✨</p>
+                        <p style="margin-top: 8px; color: #e60023; font-weight: 500;">
+                            #小众咖啡店打卡 #高颜值下午茶 #城市探店日记
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部操作栏 -->
+        <div class="footer-bar">
+            <div class="action-grid">
+                <div class="action-btn">
+                    <iconify-icon icon="mdi:image" style="font-size: 22px; color: #e60023;"></iconify-icon>
+                    图片
+                </div>
+                <div class="action-btn">
+                    <iconify-icon icon="mdi:file-pdf" style="font-size: 22px; color: #888;"></iconify-icon>
+                    PDF
+                </div>
+                <div class="action-btn">
+                    <iconify-icon icon="mdi:text" style="font-size: 22px; color: #888;"></iconify-icon>
+                    文案
+                </div>
+                <div class="action-btn">
+                    <iconify-icon icon="mdi:history" style="font-size: 22px; color: #888;"></iconify-icon>
+                    记录
+                </div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-left: 20px; padding: 0 12px;">
+                <div style="font-size: 12px; color: #888; margin-bottom: 2px;">批量处理</div>
+                <div class="switch-container active">
+                    <div class="switch-handle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 模板点击效果
+        const templateItems = document.querySelectorAll('.template-item');
+        templateItems.forEach(item => {
+            item.addEventListener('click', function() {
+                // 移除所有现有的overlay
+                document.querySelectorAll('.template-overlay').forEach(overlay => {
+                    overlay.remove();
+                });
+                
+                // 为当前点击的模板添加overlay
+                const overlay = document.createElement('div');
+                overlay.className = 'template-overlay';
+                overlay.textContent = '当前选择';
+                this.appendChild(overlay);
+                
+                // 添加选择动画效果
+                this.style.transform = 'scale(1.08)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 300);
+            });
+        });
+        
+        // 按钮悬停提示效果
+        const controlBtns = document.querySelectorAll('.control-btn');
+        controlBtns.forEach(btn => {
+            btn.addEventListener('mouseover', function() {
+                const text = this.querySelector('div')?.textContent || '';
+                if(!text) return;
+                
+                const tip = document.createElement('div');
+                tip.className = 'tool-tip';
+                tip.textContent = text;
+                this.appendChild(tip);
+                tip.style.display = 'block';
+            });
+            
+            btn.addEventListener('mouseleave', function() {
+                this.querySelector('.tool-tip')?.remove();
+            });
+        });
+        
+        // 拖放区域效果
+        const dropZone = document.getElementById('dropZone');
+        
+        dropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.style.borderColor = '#ff97ac';
+            this.style.background = '#ffeef2';
+            this.style.transform = 'scale(1.02)';
+            this.style.boxShadow = '0 5px 15px rgba(255, 151, 172, 0.2)';
+        });
+        
+        dropZone.addEventListener('dragleave', function() {
+            this.style.borderColor = '#e1cad2';
+            this.style.background = '#fdfafb';
+            this.style.transform = '';
+            this.style.boxShadow = '';
+        });
+        
+        dropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.style.borderColor = '#ff97ac';
+            this.style.background = '#fdfafb';
+            this.style.transform = '';
+            
+            // 显示上传成功反馈
+            const icon = this.querySelector('iconify-icon');
+            icon.icon = 'mdi:check-circle';
+            icon.style.color = '#4caf50';
+            icon.style.fontSize = '36px'; // 放大成功图标
+            
+            const text = this.querySelector('p');
+            text.textContent = '内容已上传，正在转换...';
+            text.style.color = '#ff5252';
+            text.style.fontWeight = '600';
+            
+            // 模拟处理进度
+            let progress = 0;
+            const progressBar = document.querySelector('.progress-bar');
+            progressBar.style.width = '0%';
+            
+            const progressInterval = setInterval(() => {
+                progress += 10;
+                progressBar.style.width = `${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
+                    text.textContent = '转换完成！';
+                    text.style.color = '#4caf50';
+                    
+                    // 添加完成动画
+                    this.animate([
+                        { boxShadow: '0 0 0 4px rgba(76, 175, 80, 0.5)' },
+                        { boxShadow: '0 0 0 8px rgba(76, 175, 80, 0)' }
+                    ], {
+                        duration: 1000,
+                        iterations: 1
+                    });
+                }
+            }, 100);
+        });
+        
+        // 点击上传效果
+        dropZone.addEventListener('click', function() {
+            // 模拟文件选择对话框
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*,text/plain';
+            fileInput.style.display = 'none';
+            document.body.appendChild(fileInput);
+            fileInput.click();
+            
+            fileInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    // 触发与拖放相同的视觉效果
+                    const dropEvent = new Event('drop');
+                    dropZone.dispatchEvent(dropEvent);
+                }
+                document.body.removeChild(fileInput);
+            });
+        });
+        
+        // 控制按钮点击效果
+        const controlButtons = document.querySelectorAll('.control-btn');
+        controlButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // 移除所有按钮的active状态
+                controlButtons.forEach(b => b.classList.remove('active'));
+                // 设置当前按钮为active
+                this.classList.add('active');
+                // 添加点击波纹效果
+                const ripple = document.createElement('div');
+                ripple.style.position = 'absolute';
+                ripple.style.borderRadius = '50%';
+                ripple.style.backgroundColor = 'rgba(255, 82, 82, 0.2)';
+                ripple.style.width = '100px';
+                ripple.style.height = '100px';
+                ripple.style.transform = 'translate(-50%, -50%) scale(0)';
+                ripple.style.animation = 'ripple 0.6s linear';
+                
+                this.appendChild(ripple);
+                setTimeout(() => {
+                    this.removeChild(ripple);
+                }, 600);
+            });
+        });
+        
+        // 开关切换效果
+        const switchContainer = document.querySelector('.switch-container');
+        switchContainer.addEventListener('click', function() {
+            this.classList.toggle('active');
+        });
+        
+        // 添加动画样式
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: translate(-50%, -50%) scale(2.5);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
