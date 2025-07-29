@@ -35,6 +35,7 @@ STYLE_MAP = {
     '复古学习感': 'retro',
     '苹果备忘录': 'apple',
     '奶油胶风': 'cream',
+    '纯白极简': 'clean',
 }
 HIGHLIGHT_THEMES = {
     'GitHub': 'github',
@@ -104,6 +105,7 @@ i18n = {
 }
 
 def split_markdown_blocks(content, n):
+    """优化的markdown内容分割函数，确保内容完整性"""
     blocks = []
     lines = content.split('\n')
     buf = []
@@ -128,122 +130,175 @@ def split_markdown_blocks(content, n):
             buf.append(line)
     if buf:
         blocks.append({'type': 'code' if in_code else 'text', 'content': '\n'.join(buf), 'lang': code_lang})
+    
+    # 优化分割策略：确保内容不丢失
+    if not blocks:
+        return [[] for _ in range(n)]
+    
     total_len = sum(len(b['content']) for b in blocks)
-    avg_len = total_len // n + 1
+    if total_len == 0:
+        return [[] for _ in range(n)]
+        
+    # 计算每段的目标长度，留有余量
+    avg_len = max(total_len // n, 100)  # 确保最小长度
+    
     result = []
     cur = []
     cur_len = 0
+    
     for b in blocks:
-        if cur and (cur_len + len(b['content']) > avg_len) and len(result) < n-1:
+        block_len = len(b['content'])
+        
+        # 如果当前块太大，且还有剩余分割数，则分割当前内容
+        if cur and (cur_len + block_len > avg_len * 1.5) and len(result) < n-1:
             result.append(cur)
             cur = []
             cur_len = 0
+        
         cur.append(b)
-        cur_len += len(b['content'])
+        cur_len += block_len
+    
+    # 处理剩余内容
     if cur:
         result.append(cur)
+    
+    # 确保返回n个分组，即使有些为空
     while len(result) < n:
         result.append([])
+    
+    # 如果分组数超过n，合并最后几组
+    if len(result) > n:
+        last_group = []
+        for group in result[n-1:]:
+            last_group.extend(group)
+        result = result[:n-1] + [last_group]
+    
     return result
+
+def smart_split_text_content(content, target_count):
+    """智能文本内容分割，按段落和长度平衡分配"""
+    lines = [line.strip() for line in content.split('\n') if line.strip()]
+    if not lines:
+        return [''] * target_count
+    
+    total_chars = sum(len(line) for line in lines)
+    target_chars_per_group = max(total_chars // target_count, 50)  # 最少50字符
+    
+    groups = []
+    current_group = []
+    current_chars = 0
+    
+    for line in lines:
+        line_chars = len(line)
+        
+        # 如果当前组已经足够长，且还有剩余分组数
+        if current_group and (current_chars + line_chars > target_chars_per_group * 1.3) and len(groups) < target_count - 1:
+            groups.append('\n'.join(current_group))
+            current_group = []
+            current_chars = 0
+        
+        current_group.append(line)
+        current_chars += line_chars
+    
+    # 处理最后一组
+    if current_group:
+        groups.append('\n'.join(current_group))
+    
+    # 确保返回目标数量的分组
+    while len(groups) < target_count:
+        groups.append('')
+    
+    # 如果分组过多，合并末尾的组
+    if len(groups) > target_count:
+        last_content = '\n'.join(groups[target_count-1:])
+        groups = groups[:target_count-1] + [last_content]
+    
+    return groups
 
 THEME_QSS = {
     '极简白': '''
-        QWidget { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #f8f4ed, stop:1 #ffeeee); font-family: "微软雅黑", Arial, Roboto, sans-serif; }
-        QLabel#LogoLabel { margin: 0 auto; }
-        QLabel { color: #222; font-size: 1.28em; font-weight: 600; letter-spacing: 0.5px; }
-        QLineEdit, QTextEdit { border: 2px solid #e1cad2; border-radius: 20px; padding: 16px; background: #fff; font-size: 1.18em; color: #222; font-weight: 500; box-shadow: 0 3px 10px rgba(255,151,172,0.08); }
-        QPushButton { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #ff9e80, stop:1 #ff5252); color: #fff; border-radius: 18px; padding: 16px 44px; font-size: 1.22em; margin: 0 16px; font-weight: 700; box-shadow: 0 4px 18px #ffd6ec; letter-spacing: 1px; transition: background 0.3s, box-shadow 0.3s; }
-        QPushButton:hover { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #ff7eb3, stop:1 #ff5252); box-shadow: 0 8px 24px #ffd6ec; }
-        QComboBox, QSpinBox { border: 2px solid #e1cad2; border-radius: 16px; padding: 12px; background: #fff; font-size: 1.18em; color: #222; font-weight: 500; }
-        QProgressBar { border: 2px solid #f2e5e8; border-radius: 10px; text-align: center; background: #f2e5e8; font-size: 1.1em; height: 10px; }
-        QProgressBar::chunk { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #ff9e80, stop:1 #ff5252); border-radius: 10px; }
-        QFrame.card { background: #fff; border-radius: 24px; box-shadow: 0 10px 30px rgba(255,151,172,0.10), 0 2px 8px rgba(0,0,0,0.04); margin: 2.5em 1.5em; padding: 2.5em 2em 2em 2em; border: 1.5px solid #e1cad2; transition: box-shadow 0.3s, transform 0.3s; }
-        QFrame#card:hover { box-shadow: 0 20px 40px #ffd6ec, 0 8px 16px rgba(0,0,0,0.08); transform: translateY(-5px) scale(1.01); }
-        QFrame.line { border-top: 2px solid #e8e0dc; margin: 1.5em 0; background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #fff, stop:1 #e8e0dc); }
+        QWidget { background: #f8f4ed; font-family: "微软雅黑", Arial, Roboto, sans-serif; }
+        QLabel { color: #222; font-size: 18px; font-weight: 600; }
+        QLineEdit, QTextEdit { border: 2px solid #e1cad2; border-radius: 8px; padding: 12px; background: #fff; font-size: 16px; color: #222; font-weight: 500; }
+        QPushButton { background: #ff9e80; color: #fff; border-radius: 8px; padding: 12px 20px; font-size: 16px; margin: 0 8px; font-weight: 700; }
+        QPushButton:hover { background: #ff7043; }
+        QComboBox, QSpinBox { border: 2px solid #e1cad2; border-radius: 8px; padding: 8px; background: #fff; font-size: 16px; color: #222; font-weight: 500; }
+        QProgressBar { border: 2px solid #f2e5e8; border-radius: 4px; text-align: center; background: #f2e5e8; font-size: 14px; height: 8px; }
+        QProgressBar::chunk { background: #ff9e80; border-radius: 4px; }
+        QFrame.card { background: #fff; border-radius: 12px; margin: 15px 10px; padding: 20px 15px 15px 15px; border: 1px solid #e1cad2; }
+        QFrame.line { border-top: 2px solid #e8e0dc; margin: 15px 0; background: #fff; }
     ''',
     '暗色': '''
         QWidget { background: #23272e; font-family: "微软雅黑", Arial, Roboto, sans-serif; }
-        QLabel#LogoLabel { margin: 0 auto; }
-        QLabel { color: #f8f8f2; font-size: 1.25em; font-weight: 500; }
-        QLineEdit, QTextEdit { border: 2px solid #44475a; border-radius: 18px; padding: 14px; background: #282a36; color: #f8f8f2; font-size: 1.18em; font-weight: 500; }
-        QPushButton { background: #44475a; color: #f8f8f2; border-radius: 26px; padding: 16px 44px; font-size: 1.22em; margin: 0 16px; font-weight: 700; box-shadow: 0 4px 18px #44475a; letter-spacing: 1px; }
+        QLabel { color: #f8f8f2; font-size: 16px; font-weight: 500; }
+        QLineEdit, QTextEdit { border: 2px solid #44475a; border-radius: 8px; padding: 12px; background: #282a36; color: #f8f8f2; font-size: 16px; font-weight: 500; }
+        QPushButton { background: #44475a; color: #f8f8f2; border-radius: 8px; padding: 12px 20px; font-size: 16px; margin: 0 8px; font-weight: 700; }
         QPushButton:hover { background: #6272a4; }
-        QComboBox, QSpinBox { border: 2px solid #44475a; border-radius: 16px; padding: 10px; background: #282a36; color: #f8f8f2; font-size: 1.18em; font-weight: 500; }
-        QProgressBar { border: 2px solid #44475a; border-radius: 16px; text-align: center; background: #282a36; font-size: 1.1em; }
+        QComboBox, QSpinBox { border: 2px solid #44475a; border-radius: 8px; padding: 8px; background: #282a36; color: #f8f8f2; font-size: 16px; font-weight: 500; }
+        QProgressBar { border: 2px solid #44475a; border-radius: 4px; text-align: center; background: #282a36; font-size: 14px; }
         QProgressBar::chunk { background: #6272a4; }
-        QFrame.card { background: #282a36; border-radius: 32px; box-shadow: 0 8px 36px #44475a; margin: 3em 2em; padding: 3em 2.5em 2.5em 2.5em; border: 2px solid #44475a; }
-        QFrame#card:hover { box-shadow: 0 16px 56px #6272a4; }
-        QFrame.line { border-top: 2px solid #44475a; margin: 1.5em 0; }
+        QFrame.card { background: #282a36; border-radius: 12px; margin: 15px 10px; padding: 20px 15px 15px 15px; border: 2px solid #44475a; }
+        QFrame.line { border-top: 2px solid #44475a; margin: 15px 0; }
     ''',
     '蓝色': '''
         QWidget { background: #e3f2fd; font-family: "微软雅黑", Arial, Roboto, sans-serif; }
-        QLabel#LogoLabel { margin: 0 auto; }
-        QLabel { color: #1976d2; font-size: 1.15em; }
-        QLineEdit, QTextEdit { border: 2px solid #90caf9; border-radius: 14px; padding: 10px; background: #fff; font-size: 1.1em; }
-        QPushButton { background: #1976d2; color: #fff; border-radius: 22px; padding: 12px 36px; font-size: 1.15em; margin: 0 12px; font-weight: 600; box-shadow: 0 2px 12px #90caf9; letter-spacing: 1px; }
+        QLabel { color: #1976d2; font-size: 16px; }
+        QLineEdit, QTextEdit { border: 2px solid #90caf9; border-radius: 8px; padding: 8px; background: #fff; font-size: 16px; }
+        QPushButton { background: #1976d2; color: #fff; border-radius: 8px; padding: 10px 24px; font-size: 16px; margin: 0 8px; font-weight: 600; }
         QPushButton:hover { background: #1565c0; }
-        QComboBox, QSpinBox { border: 2px solid #90caf9; border-radius: 14px; padding: 8px; background: #fff; font-size: 1.1em; }
-        QProgressBar { border: 2px solid #90caf9; border-radius: 14px; text-align: center; background: #e3f2fd; }
+        QComboBox, QSpinBox { border: 2px solid #90caf9; border-radius: 8px; padding: 6px; background: #fff; font-size: 16px; }
+        QProgressBar { border: 2px solid #90caf9; border-radius: 4px; text-align: center; background: #e3f2fd; }
         QProgressBar::chunk { background: #1976d2; }
-        QFrame.card { background: #fff; border-radius: 28px; box-shadow: 0 6px 32px #90caf9; margin: 2.5em 1.5em; padding: 2.5em 2em 2em 2em; border: 1.5px solid #90caf9; }
-        QFrame#card:hover { box-shadow: 0 12px 48px #1976d2; }
-        QFrame.line { border-top: 2px solid #90caf9; margin: 1em 0; }
+        QFrame.card { background: #fff; border-radius: 12px; margin: 15px 10px; padding: 20px 15px 15px 15px; border: 1px solid #90caf9; }
+        QFrame.line { border-top: 2px solid #90caf9; margin: 10px 0; }
     ''',
     '绿色': '''
         QWidget { background: #e8f5e9; font-family: "微软雅黑", Arial, Roboto, sans-serif; }
-        QLabel#LogoLabel { margin: 0 auto; }
-        QLabel { color: #388e3c; font-size: 1.15em; }
-        QLineEdit, QTextEdit { border: 2px solid #a5d6a7; border-radius: 14px; padding: 10px; background: #fff; font-size: 1.1em; }
-        QPushButton { background: #388e3c; color: #fff; border-radius: 22px; padding: 12px 36px; font-size: 1.15em; margin: 0 12px; font-weight: 600; box-shadow: 0 2px 12px #a5d6a7; letter-spacing: 1px; }
+        QLabel { color: #388e3c; font-size: 16px; }
+        QLineEdit, QTextEdit { border: 2px solid #a5d6a7; border-radius: 8px; padding: 8px; background: #fff; font-size: 16px; }
+        QPushButton { background: #388e3c; color: #fff; border-radius: 8px; padding: 10px 24px; font-size: 16px; margin: 0 8px; font-weight: 600; }
         QPushButton:hover { background: #2e7d32; }
-        QComboBox, QSpinBox { border: 2px solid #a5d6a7; border-radius: 14px; padding: 8px; background: #fff; font-size: 1.1em; }
-        QProgressBar { border: 2px solid #a5d6a7; border-radius: 14px; text-align: center; background: #e8f5e9; }
+        QComboBox, QSpinBox { border: 2px solid #a5d6a7; border-radius: 8px; padding: 6px; background: #fff; font-size: 16px; }
+        QProgressBar { border: 2px solid #a5d6a7; border-radius: 4px; text-align: center; background: #e8f5e9; }
         QProgressBar::chunk { background: #388e3c; }
-        QFrame.card { background: #fff; border-radius: 28px; box-shadow: 0 6px 32px #a5d6a7; margin: 2.5em 1.5em; padding: 2.5em 2em 2em 2em; border: 1.5px solid #a5d6a7; }
-        QFrame#card:hover { box-shadow: 0 12px 48px #388e3c; }
-        QFrame.line { border-top: 2px solid #a5d6a7; margin: 1em 0; }
+        QFrame.card { background: #fff; border-radius: 12px; margin: 15px 10px; padding: 20px 15px 15px 15px; border: 1px solid #a5d6a7; }
+        QFrame.line { border-top: 2px solid #a5d6a7; margin: 10px 0; }
     ''',
     '橙色': '''
         QWidget { background: #fff3e0; font-family: "微软雅黑", Arial, Roboto, sans-serif; }
-        QLabel#LogoLabel { margin: 0 auto; }
-        QLabel { color: #f57c00; font-size: 1.15em; }
-        QLineEdit, QTextEdit { border: 2px solid #ffcc80; border-radius: 14px; padding: 10px; background: #fff; font-size: 1.1em; }
-        QPushButton { background: #f57c00; color: #fff; border-radius: 22px; padding: 12px 36px; font-size: 1.15em; margin: 0 12px; font-weight: 600; box-shadow: 0 2px 12px #ffcc80; letter-spacing: 1px; }
+        QLabel { color: #f57c00; font-size: 16px; }
+        QLineEdit, QTextEdit { border: 2px solid #ffcc80; border-radius: 8px; padding: 8px; background: #fff; font-size: 16px; }
+        QPushButton { background: #f57c00; color: #fff; border-radius: 8px; padding: 10px 24px; font-size: 16px; margin: 0 8px; font-weight: 600; }
         QPushButton:hover { background: #ef6c00; }
-        QComboBox, QSpinBox { border: 2px solid #ffcc80; border-radius: 14px; padding: 8px; background: #fff; font-size: 1.1em; }
-        QProgressBar { border: 2px solid #ffcc80; border-radius: 14px; text-align: center; background: #fff3e0; }
+        QComboBox, QSpinBox { border: 2px solid #ffcc80; border-radius: 8px; padding: 6px; background: #fff; font-size: 16px; }
+        QProgressBar { border: 2px solid #ffcc80; border-radius: 4px; text-align: center; background: #fff3e0; }
         QProgressBar::chunk { background: #f57c00; }
-        QFrame.card { background: #fff; border-radius: 28px; box-shadow: 0 6px 32px #ffcc80; margin: 2.5em 1.5em; padding: 2.5em 2em 2em 2em; border: 1.5px solid #ffcc80; }
-        QFrame#card:hover { box-shadow: 0 12px 48px #f57c00; }
-        QFrame.line { border-top: 2px solid #ffcc80; margin: 1em 0; }
+        QFrame.card { background: #fff; border-radius: 12px; margin: 15px 10px; padding: 20px 15px 15px 15px; border: 1px solid #ffcc80; }
+        QFrame.line { border-top: 2px solid #ffcc80; margin: 10px 0; }
     ''',
     '粉色': '''
         QWidget { background: #fff0fa; font-family: "微软雅黑", Arial, Roboto, sans-serif; }
-        QLabel#LogoLabel { margin: 0 auto; }
-        QLabel { color: #e573b4; font-size: 1.15em; }
-        QLineEdit, QTextEdit { border: 2px solid #ffb6d5; border-radius: 14px; padding: 10px; background: #fff; font-size: 1.1em; }
-        QPushButton { background: #ffb6d5; color: #fff; border-radius: 22px; padding: 12px 36px; font-size: 1.15em; margin: 0 12px; font-weight: 600; box-shadow: 0 2px 12px #ffd6ec; letter-spacing: 1px; }
+        QLabel { color: #e573b4; font-size: 16px; }
+        QLineEdit, QTextEdit { border: 2px solid #ffb6d5; border-radius: 8px; padding: 8px; background: #fff; font-size: 16px; }
+        QPushButton { background: #ffb6d5; color: #fff; border-radius: 8px; padding: 10px 24px; font-size: 16px; margin: 0 8px; font-weight: 600; }
         QPushButton:hover { background: #e573b4; }
-        QComboBox, QSpinBox { border: 2px solid #ffb6d5; border-radius: 14px; padding: 8px; background: #fff; font-size: 1.1em; }
-        QProgressBar { border: 2px solid #ffb6d5; border-radius: 14px; text-align: center; background: #fff6fb; }
+        QComboBox, QSpinBox { border: 2px solid #ffb6d5; border-radius: 8px; padding: 6px; background: #fff; font-size: 16px; }
+        QProgressBar { border: 2px solid #ffb6d5; border-radius: 4px; text-align: center; background: #fff6fb; }
         QProgressBar::chunk { background: #e573b4; }
-        QFrame.card { background: #fff; border-radius: 28px; box-shadow: 0 6px 32px #ffd6ec; margin: 2.5em 1.5em; padding: 2.5em 2em 2em 2em; border: 1.5px solid #ffb6d5; }
-        QFrame#card:hover { box-shadow: 0 12px 48px #e573b4; }
-        QFrame.line { border-top: 2px solid #ffb6d5; margin: 1em 0; }
+        QFrame.card { background: #fff; border-radius: 12px; margin: 15px 10px; padding: 20px 15px 15px 15px; border: 1px solid #ffb6d5; }
+        QFrame.line { border-top: 2px solid #ffb6d5; margin: 10px 0; }
     ''',
     '暗黑粉': '''
         QWidget { background: #2d1e2f; font-family: "微软雅黑", Arial, Roboto, sans-serif; }
-        QLabel#LogoLabel { margin: 0 auto; }
-        QLabel { color: #ffb6d5; font-size: 1.15em; }
-        QLineEdit, QTextEdit { border: 2px solid #ffb6d5; border-radius: 14px; padding: 10px; background: #3a2a3d; color: #fff; font-size: 1.1em; }
-        QPushButton { background: #ffb6d5; color: #fff; border-radius: 22px; padding: 12px 36px; font-size: 1.15em; margin: 0 12px; font-weight: 600; box-shadow: 0 2px 12px #ffb6d5; letter-spacing: 1px; }
+        QLabel { color: #ffb6d5; font-size: 16px; }
+        QLineEdit, QTextEdit { border: 2px solid #ffb6d5; border-radius: 8px; padding: 8px; background: #3a2a3d; color: #fff; font-size: 16px; }
+        QPushButton { background: #ffb6d5; color: #fff; border-radius: 8px; padding: 10px 24px; font-size: 16px; margin: 0 8px; font-weight: 600; }
         QPushButton:hover { background: #e573b4; }
-        QComboBox, QSpinBox { border: 2px solid #ffb6d5; border-radius: 14px; padding: 8px; background: #3a2a3d; color: #fff; font-size: 1.1em; }
-        QProgressBar { border: 2px solid #ffb6d5; border-radius: 14px; text-align: center; background: #3a2a3d; }
+        QComboBox, QSpinBox { border: 2px solid #ffb6d5; border-radius: 8px; padding: 6px; background: #3a2a3d; color: #fff; font-size: 16px; }
+        QProgressBar { border: 2px solid #ffb6d5; border-radius: 4px; text-align: center; background: #3a2a3d; }
         QProgressBar::chunk { background: #e573b4; }
-        QFrame.card { background: #3a2a3d; border-radius: 28px; box-shadow: 0 6px 32px #ffb6d5; margin: 2.5em 1.5em; padding: 2.5em 2em 2em 2em; border: 1.5px solid #ffb6d5; }
-        QFrame#card:hover { box-shadow: 0 12px 48px #e573b4; }
-        QFrame.line { border-top: 2px solid #ffb6d5; margin: 1em 0; }
+        QFrame.card { background: #3a2a3d; border-radius: 12px; margin: 15px 10px; padding: 20px 15px 15px 15px; border: 1px solid #ffb6d5; }
+        QFrame.line { border-top: 2px solid #ffb6d5; margin: 10px 0; }
     ''',
     'retro': '''
         QFrame.card { background: #fdf6e3; border-radius: 24px; border: 2px dashed #b58900; padding: 32px 24px 20px 24px; }
@@ -254,63 +309,31 @@ THEME_QSS = {
         QLabel, QTextEdit { color: #222; font-family: 'SF Pro Display', '微软雅黑', Arial, sans-serif; font-size: 1.18em; }
     ''',
     'cream': '''
-        QFrame.card { background: #fff0e6; border-radius: 32px; border: 2px solid #ffd6b3; padding: 36px 28px 24px 28px; }
-        QLabel, QTextEdit { color: #ff8c42; font-family: 'Comic Sans MS', '微软雅黑', Arial, sans-serif; font-size: 1.22em; }
+        QFrame.card { background: #fff0e6; border-radius: 28px; border: 2px solid #ffd6b3; padding: 28px 20px 14px 20px; }
+        QLabel, QTextEdit { color: #ff8c42; font-family: 'Comic Sans MS', '微软雅黑', Arial, sans-serif; font-size: 1.16em; }
+    ''',
+    'clean': '''
+        QFrame.card { background: #ffffff; border-radius: 8px; border: 1px solid #e0e0e0; padding: 24px 20px 16px 20px; }
+        QLabel, QTextEdit { color: #333; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.12em; }
     ''',
 }
 
 CARD_QSS = {
     'minimal': '''
-        QFrame.card { background: #fff; border-radius: 22px; border: 1.5px solid #e1cad2; padding: 36px 28px 24px 28px; box-shadow: 0 6px 18px rgba(255,151,172,0.10); transition: box-shadow 0.3s, transform 0.3s; }
-        QLabel, QTextEdit { color: #222; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.22em; font-weight: 600; }
+        QFrame.card { background: #fff; border-radius: 8px; border: 1px solid #e1cad2; padding: 20px 16px 12px 16px; }
+        QLabel, QTextEdit { color: #222; font-family: '微软雅黑', Arial, sans-serif; font-size: 16px; font-weight: 600; }
     ''',
     'card': '''
-        QFrame.card { background: #fffdf8; border-radius: 28px; border: 2px solid #ffbdbd; padding: 44px 32px 28px 32px; box-shadow: 0 12px 32px rgba(255,151,172,0.13); transition: box-shadow 0.3s, transform 0.3s; }
-        QLabel, QTextEdit { color: #e60023; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.28em; font-weight: bold; }
-    ''',
-    'gradient': '''
-        QFrame.card { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #f8ffae, stop:1 #43c6ac); border-radius: 28px; border: 2px solid #43c6ac; padding: 28px 22px 18px 22px; }
-        QLabel, QTextEdit { color: #222; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.18em; }
-    ''',
-    'fresh': '''
-        QFrame.card { background: #e0f7fa; border-radius: 24px; border: 1.5px solid #4dd0e1; padding: 24px 20px 16px 20px; }
-        QLabel, QTextEdit { color: #00796b; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.16em; }
-    ''',
-    'darktech': '''
-        QFrame.card { background: #23272e; border-radius: 24px; border: 1.5px solid #44475a; padding: 24px 20px 16px 20px; }
-        QLabel, QTextEdit { color: #f8f8f2; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.16em; }
-    ''',
-    'kawaii': '''
-        QFrame.card { background: #fff0fa; border-radius: 28px; border: 2px solid #ffb6d5; padding: 28px 22px 18px 22px; }
-        QLabel, QTextEdit { color: #e573b4; font-family: '幼圆', '微软雅黑', Arial, sans-serif; font-size: 1.18em; }
+        QFrame.card { background: #fffdf8; border-radius: 12px; border: 1px solid #ffbdbd; padding: 24px 18px 16px 18px; }
+        QLabel, QTextEdit { color: #e60023; font-family: '微软雅黑', Arial, sans-serif; font-size: 17px; font-weight: bold; }
     ''',
     'simple': '''
-        QFrame.card { background: #fff; border-radius: 24px; border: 1.5px solid #e0e0e0; padding: 24px 20px 16px 20px; }
-        QLabel, QTextEdit { color: #1976d2; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.16em; }
+        QFrame.card { background: #fff; border-radius: 8px; border: 1px solid #e0e0e0; padding: 16px 12px 10px 12px; }
+        QLabel, QTextEdit { color: #1976d2; font-family: '微软雅黑', Arial, sans-serif; font-size: 15px; }
     ''',
-    'emoji': '''
-        QFrame.card { background: #fffde7; border-radius: 28px; border: 3px dashed #ffd54f; padding: 28px 22px 18px 22px; }
-        QLabel, QTextEdit { color: #ff9800; font-family: '幼圆', '微软雅黑', Arial, sans-serif; font-size: 1.18em; }
-    ''',
-    'macaron': '''
-        QFrame.card { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #ffe0f7, stop:1 #e0f7fa); border-radius: 28px; border: 3px solid #a259ff; padding: 28px 22px 18px 22px; }
-        QLabel, QTextEdit { color: #a259ff; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.18em; }
-    ''',
-    'sticker': '''
-        QFrame.card { background: #fff; border-radius: 24px; border: 3px dashed #43a047; padding: 24px 20px 16px 20px; }
-        QLabel, QTextEdit { color: #43a047; font-family: '微软雅黑', Arial, sans-serif; font-size: 1.16em; }
-    ''',
-    'retro': '''
-        QFrame.card { background: #fdf6e3; border-radius: 20px; border: 2px dashed #b58900; padding: 20px 16px 12px 16px; }
-        QLabel, QTextEdit { color: #b58900; font-family: 'Fira Mono', '微软雅黑', monospace; font-size: 1.12em; }
-    ''',
-    'apple': '''
-        QFrame.card { background: #fffbe7; border-radius: 20px; border: 2px solid #e1e1e1; padding: 20px 16px 12px 16px; }
-        QLabel, QTextEdit { color: #222; font-family: 'SF Pro Display', '微软雅黑', Arial, sans-serif; font-size: 1.12em; }
-    ''',
-    'cream': '''
-        QFrame.card { background: #fff0e6; border-radius: 28px; border: 2px solid #ffd6b3; padding: 28px 20px 14px 20px; }
-        QLabel, QTextEdit { color: #ff8c42; font-family: 'Comic Sans MS', '微软雅黑', Arial, sans-serif; font-size: 1.16em; }
+    'clean': '''
+        QFrame.card { background: #ffffff; border-radius: 6px; border: 1px solid #e0e0e0; padding: 18px 14px 12px 14px; }
+        QLabel, QTextEdit { color: #333; font-family: '微软雅黑', Arial, sans-serif; font-size: 15px; }
     ''',
 }
 
@@ -331,9 +354,9 @@ class EditDialog(QDialog):
         self.text_edit.setPlainText(orig_md)
         layout.addWidget(self.text_edit)
         btns = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
-        # 美化按钮
+        # 简化按钮样式
         for btn in btns.buttons():
-            btn.setStyleSheet('QPushButton { background: #1976d2; color: #fff; border-radius: 18px; padding: 10px 28px; font-size: 1.1em; margin: 0 10px; font-weight: 500; box-shadow: 0 2px 8px #e3eafc; } QPushButton:hover { background: #1565c0; }')
+            btn.setStyleSheet('QPushButton { background: #1976d2; color: #fff; border-radius: 8px; padding: 8px 20px; font-size: 14px; margin: 0 8px; font-weight: 500; } QPushButton:hover { background: #1565c0; }')
         btns.accepted.connect(self.accept)
         btns.rejected.connect(self.reject)
         layout.addWidget(btns)
@@ -351,13 +374,12 @@ class ThumbButton(QPushButton):
         self.setCursor(Qt.PointingHandCursor)
         self.setStyleSheet('''
             QPushButton {
-                border-radius: 12px;
+                border-radius: 8px;
                 border: 2px solid #e0e0e0;
                 background: #fff;
-                font-size: 1.18em;
+                font-size: 16px;
                 font-weight: bold;
                 color: #FF2D55;
-                box-shadow: 0 2px 8px #ffd6ec;
             }
             QPushButton:hover {
                 border: 2px solid #FF2D55;
@@ -373,26 +395,24 @@ class ThumbButton(QPushButton):
         self.img_label.hide()
         self.thumbnail = None
         self.full_img = None
+    
     def setPixmap(self, pixmap):
         self.thumbnail = pixmap
         self.img_label.setPixmap(pixmap)
         self.img_label.show()
+    
     def setFullPixmap(self, pixmap):
         self.full_img = pixmap
+    
     def enterEvent(self, event):
         super().enterEvent(event)
-        self.setStyleSheet('border-radius:12px; border:2px solid #FF2D55; background:#fff0fa; font-size:1.18em; font-weight:bold; color:#FF2D55;')
-        # 鼠标悬停显示大图预览
-        if self.full_img:
-            QToolTip.showText(self.mapToGlobal(self.rect().bottomLeft()), '', self)
-            preview = QLabel()
-            preview.setPixmap(self.full_img.scaled(220, 160, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-            preview.setWindowFlags(Qt.ToolTip)
-            preview.show()
-            QTimer.singleShot(1200, preview.close)
+        # 简化悬停效果，移除复杂的预览
+        self.setStyleSheet('border-radius:8px; border:2px solid #FF2D55; background:#fff0fa; font-size:16px; font-weight:bold; color:#FF2D55;')
+    
     def leaveEvent(self, event):
         super().leaveEvent(event)
-        self.setStyleSheet('border-radius:12px; border:2px solid #e0e0e0; background:#fff; font-size:1.18em; font-weight:bold; color:#FF2D55;')
+        self.setStyleSheet('border-radius:8px; border:2px solid #e0e0e0; background:#fff; font-size:16px; font-weight:bold; color:#FF2D55;')
+    
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             drag = QDrag(self)
@@ -410,16 +430,19 @@ class ThumbButton(QPushButton):
             menu.addAction(act_copy)
             menu.exec_(self.mapToGlobal(event.pos()))
         super().mousePressEvent(event)
+    
     def dragEnterEvent(self, event):
         event.accept()
-        self.setStyleSheet('border-radius:12px; border:2px solid #FF2D55; background:#fff0fa; font-size:1.18em; font-weight:bold; color:#FF2D55;')
+        self.setStyleSheet('border-radius:8px; border:2px solid #FF2D55; background:#fff0fa; font-size:16px; font-weight:bold; color:#FF2D55;')
+    
     def dragLeaveEvent(self, event):
-        self.setStyleSheet('border-radius:12px; border:2px solid #e0e0e0; background:#fff; font-size:1.18em; font-weight:bold; color:#FF2D55;')
+        self.setStyleSheet('border-radius:8px; border:2px solid #e0e0e0; background:#fff; font-size:16px; font-weight:bold; color:#FF2D55;')
+    
     def dropEvent(self, event):
         src_idx = int(event.mimeData().text())
         dst_idx = self.idx
         self.main_window.handle_thumb_drag(src_idx, dst_idx)
-        self.setStyleSheet('border-radius:12px; border:2px solid #FF2D55; background:#fff; font-size:1.18em; font-weight:bold; color:#FF2D55;')
+        self.setStyleSheet('border-radius:8px; border:2px solid #FF2D55; background:#fff; font-size:16px; font-weight:bold; color:#FF2D55;')
 
 class XHSWindow(QWidget):
     def __init__(self):
@@ -499,7 +522,7 @@ class XHSWindow(QWidget):
         # 2. 输入区卡片化
         input_card = QFrame()
         input_card.setObjectName('input_card')
-        input_card.setStyleSheet('QFrame#input_card { background: #fff; border-radius: 20px; box-shadow: 0 5px 15px -3px rgba(255,151,172,0.10), 0 3px 6px -2px rgba(0,0,0,0.05); border: 1.5px solid #e1cad2; padding: 22px 22px 10px 22px; transition: box-shadow 0.2s, transform 0.2s; } QFrame#input_card:hover { box-shadow: 0 8px 20px -4px rgba(255,151,172,0.15), 0 4px 8px -3px rgba(0,0,0,0.08); transform: translateY(-2px); }')
+        input_card.setStyleSheet('QFrame#input_card { background: #fff; border-radius: 12px; border: 1px solid #e1cad2; padding: 18px 18px 8px 18px; }')
         input_row = QHBoxLayout()
         input_row.setSpacing(12)
         self.link_input = QLineEdit()
@@ -569,6 +592,7 @@ class XHSWindow(QWidget):
             '复古学习感': emoji_icon('📚'),
             '苹果备忘录': emoji_icon('🍏'),
             '奶油胶风': emoji_icon('🧁'),
+            '纯白极简': emoji_icon('📄'),
         }
         self.card_style_combo.clear()
         for style in STYLE_MAP.keys():
@@ -667,7 +691,7 @@ class XHSWindow(QWidget):
         btn_bar_widget = QWidget()
         btn_bar_widget.setLayout(btn_row)
         btn_bar_widget.setFixedHeight(60)
-        btn_bar_widget.setStyleSheet('background: rgba(255,255,255,0.94); border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; box-shadow: 0 -2px 10px rgba(255,151,172,0.04), inset 0 1px 0 rgba(255,255,255,0.7);')
+        btn_bar_widget.setStyleSheet('background: #fff; border-radius: 8px; border: 1px solid #e0e0e0;')
         layout.addWidget(btn_bar_widget)
         self.setLayout(layout)
         self.apply_theme(theme_name)
@@ -687,10 +711,16 @@ class XHSWindow(QWidget):
     def on_card_style_change(self, idx):
         self.refresh_previews()
     def handle_beautify(self):
-        # 推荐模板：杂志卡片
-        self.card_style_combo.setCurrentText('杂志卡片')
-        self.split_spin.setValue(max(2, self.split_spin.value()))
-        QMessageBox.information(self, '一键美化', '已应用推荐模板"杂志卡片"并优化分割，欢迎继续微调！')
+        # 根据内容长度推荐合适的模板
+        content_length = len(self.last_content) if self.last_content else 0
+        if content_length > 1000:  # 长文推荐纯白极简
+            self.card_style_combo.setCurrentText('纯白极简')
+            self.split_spin.setValue(max(3, min(8, content_length // 500)))
+            QMessageBox.information(self, '一键美化', '长文已应用"纯白极简"模板，确保内容完整显示并优化分割数量！')
+        else:  # 短文推荐杂志卡片
+            self.card_style_combo.setCurrentText('杂志卡片')
+            self.split_spin.setValue(max(2, self.split_spin.value()))
+            QMessageBox.information(self, '一键美化', '已应用推荐模板"杂志卡片"并优化分割，欢迎继续微调！')
         self.refresh_previews()
     def get_style_type(self):
         style_name = self.card_style_combo.currentText()
@@ -856,31 +886,42 @@ class XHSWindow(QWidget):
                 top_row.addWidget(top_label)
                 top_row.addStretch(1)
                 card_layout.addLayout(top_row)
-                # 主图区域
+                # 主图区域 - 动态调整高度避免内容裁切 (Markdown)
                 webview = QWebEngineView()
                 webview.setHtml(html, QUrl('about:blank'))
                 webview.setMinimumWidth(600)
                 webview.setMaximumWidth(600)
-                webview.setMinimumHeight(800)
+                
+                # 根据内容长度动态设置高度，确保内容完整显示
+                content_length = len(md)
+                if self.get_style_type() == 'clean':
+                    # 纯白极简模板：更精确的高度计算
+                    estimated_height = max(600, min(1400, 400 + content_length * 0.8))
+                else:
+                    # 其他模板保持原有逻辑，但增加最小高度
+                    estimated_height = max(800, min(1400, 600 + content_length * 0.6))
+                
+                webview.setMinimumHeight(int(estimated_height))
+                webview.setMaximumHeight(int(estimated_height * 1.2))  # 留一些余量
                 webview.setStyleSheet('background:#fff;border-radius:18px;')
                 card_layout.addWidget(webview)
                 # 按钮区
                 btn_row = QHBoxLayout()
                 edit_btn = QPushButton('编辑')
                 edit_btn.setFixedWidth(120)
-                edit_btn.setStyleSheet('font-size:1.18em; font-weight:700; background:#1976d2; color:#fff; border-radius:16px; padding:10px 0;')
+                edit_btn.setStyleSheet('font-size:16px; font-weight:600; background:#1976d2; color:#fff; border-radius:8px; padding:8px 0;')
                 edit_btn.clicked.connect(lambda _, idx=i: self.edit_card(idx))
                 export_btn = QPushButton('导出本图')
                 export_btn.setFixedWidth(140)
-                export_btn.setStyleSheet('font-size:1.18em; font-weight:700; background:#1976d2; color:#fff; border-radius:16px; padding:10px 0;')
+                export_btn.setStyleSheet('font-size:16px; font-weight:600; background:#1976d2; color:#fff; border-radius:8px; padding:8px 0;')
                 export_btn.clicked.connect(lambda _, idx=i: self.export_single_image(idx))
                 copy_content_btn = QPushButton('复制内容')
                 copy_content_btn.setFixedWidth(120)
-                copy_content_btn.setStyleSheet('font-size:1.18em; font-weight:700; background:#1976d2; color:#fff; border-radius:16px; padding:10px 0;')
+                copy_content_btn.setStyleSheet('font-size:16px; font-weight:600; background:#1976d2; color:#fff; border-radius:8px; padding:8px 0;')
                 copy_content_btn.clicked.connect(lambda _, idx=i: self.copy_thumb_content(idx))
                 copy_img_btn = QPushButton('复制图片')
                 copy_img_btn.setFixedWidth(120)
-                copy_img_btn.setStyleSheet('font-size:1.18em; font-weight:700; background:#1976d2; color:#fff; border-radius:16px; padding:10px 0;')
+                copy_img_btn.setStyleSheet('font-size:16px; font-weight:600; background:#1976d2; color:#fff; border-radius:8px; padding:8px 0;')
                 copy_img_btn.clicked.connect(lambda _, idx=i: self.copy_card_image(idx))
                 btn_row.addStretch(1)
                 btn_row.addWidget(edit_btn)
@@ -894,11 +935,11 @@ class XHSWindow(QWidget):
                 summary = summary[:30] + ('...' if len(summary) > 30 else '')
                 stat_row = QHBoxLayout()
                 stat_summary = QLabel(f'摘要：{summary}')
-                stat_summary.setStyleSheet('font-size:1.28em; color:#000; font-weight:700; padding: 6px 18px 6px 0; line-height: 1.7;')
+                stat_summary.setStyleSheet('font-size:14px; color:#000; font-weight:600; padding: 4px 12px 4px 0;')
                 stat_row.addWidget(stat_summary)
                 stat_row.addStretch(1)
                 stat_count = QLabel(f'字数：{len(md)}')
-                stat_count.setStyleSheet('font-size:1.28em; color:#000; font-weight:700; padding: 6px 0 6px 18px; line-height: 1.7;')
+                stat_count.setStyleSheet('font-size:14px; color:#000; font-weight:600; padding: 4px 0 4px 12px;')
                 stat_row.addWidget(stat_count)
                 card_layout.addLayout(stat_row)
                 card_layout.addSpacing(12)
@@ -909,15 +950,12 @@ class XHSWindow(QWidget):
                 self.repaint()  # 确保webview渲染
                 QTimer.singleShot(200, lambda wv=webview, idx=i: self._set_thumb_pixmap(wv, idx))
         else:
-            paras = [line.strip() for line in self.last_content.split('\n') if line.strip()]
-            total = len(paras)
-            if n > total:
-                n = total
-            chunk_size = (total + n - 1) // n
-            for i in range(n):
-                chunk = paras[i*chunk_size:(i+1)*chunk_size]
-                md = '\n'.join(chunk)
-                self.preview_md_blocks.append(md)
+            # 使用优化的文本分割算法
+            text_groups = smart_split_text_content(self.last_content, n)
+            valid_groups = [group for group in text_groups if group.strip()]
+            self.preview_md_blocks = valid_groups
+            
+            for i, md in enumerate(valid_groups):
                 html = render_article_html(
                     self.last_title,
                     md,
@@ -936,36 +974,47 @@ class XHSWindow(QWidget):
                 card_layout.setSpacing(16)
                 # 顶部信息
                 top_row = QHBoxLayout()
-                top_label = QLabel(f'第{i+1}张 / 共{n}张')
+                top_label = QLabel(f'第{i+1}张 / 共{len(valid_groups)}张')
                 top_label.setStyleSheet('font-size:1.18em;color:#1976d2;font-weight:700;letter-spacing:1px;')
                 top_row.addWidget(top_label)
                 top_row.addStretch(1)
                 card_layout.addLayout(top_row)
-                # 主图区域
+                # 主图区域 - 动态调整高度避免内容裁切 (Text)
                 webview = QWebEngineView()
                 webview.setHtml(html, QUrl('about:blank'))
                 webview.setMinimumWidth(600)
                 webview.setMaximumWidth(600)
-                webview.setMinimumHeight(800)
+                
+                # 根据内容长度动态设置高度，确保内容完整显示
+                content_length = len(md)
+                if self.get_style_type() == 'clean':
+                    # 纯白极简模板：更精确的高度计算
+                    estimated_height = max(600, min(1400, 400 + content_length * 0.8))
+                else:
+                    # 其他模板保持原有逻辑，但增加最小高度
+                    estimated_height = max(800, min(1400, 600 + content_length * 0.6))
+                
+                webview.setMinimumHeight(int(estimated_height))
+                webview.setMaximumHeight(int(estimated_height * 1.2))  # 留一些余量
                 webview.setStyleSheet('background:#fff;border-radius:18px;')
                 card_layout.addWidget(webview)
                 # 按钮区
                 btn_row = QHBoxLayout()
                 edit_btn = QPushButton('编辑')
                 edit_btn.setFixedWidth(120)
-                edit_btn.setStyleSheet('font-size:1.18em; font-weight:700; background:#1976d2; color:#fff; border-radius:16px; padding:10px 0;')
+                edit_btn.setStyleSheet('font-size:16px; font-weight:600; background:#1976d2; color:#fff; border-radius:8px; padding:8px 0;')
                 edit_btn.clicked.connect(lambda _, idx=i: self.edit_card(idx))
                 export_btn = QPushButton('导出本图')
                 export_btn.setFixedWidth(140)
-                export_btn.setStyleSheet('font-size:1.18em; font-weight:700; background:#1976d2; color:#fff; border-radius:16px; padding:10px 0;')
+                export_btn.setStyleSheet('font-size:16px; font-weight:600; background:#1976d2; color:#fff; border-radius:8px; padding:8px 0;')
                 export_btn.clicked.connect(lambda _, idx=i: self.export_single_image(idx))
                 copy_content_btn = QPushButton('复制内容')
                 copy_content_btn.setFixedWidth(120)
-                copy_content_btn.setStyleSheet('font-size:1.18em; font-weight:700; background:#1976d2; color:#fff; border-radius:16px; padding:10px 0;')
+                copy_content_btn.setStyleSheet('font-size:16px; font-weight:600; background:#1976d2; color:#fff; border-radius:8px; padding:8px 0;')
                 copy_content_btn.clicked.connect(lambda _, idx=i: self.copy_thumb_content(idx))
                 copy_img_btn = QPushButton('复制图片')
                 copy_img_btn.setFixedWidth(120)
-                copy_img_btn.setStyleSheet('font-size:1.18em; font-weight:700; background:#1976d2; color:#fff; border-radius:16px; padding:10px 0;')
+                copy_img_btn.setStyleSheet('font-size:16px; font-weight:600; background:#1976d2; color:#fff; border-radius:8px; padding:8px 0;')
                 copy_img_btn.clicked.connect(lambda _, idx=i: self.copy_card_image(idx))
                 btn_row.addStretch(1)
                 btn_row.addWidget(edit_btn)
@@ -979,11 +1028,11 @@ class XHSWindow(QWidget):
                 summary = summary[:30] + ('...' if len(summary) > 30 else '')
                 stat_row = QHBoxLayout()
                 stat_summary = QLabel(f'摘要：{summary}')
-                stat_summary.setStyleSheet('font-size:1.28em; color:#000; font-weight:700; padding: 6px 18px 6px 0; line-height: 1.7;')
+                stat_summary.setStyleSheet('font-size:14px; color:#000; font-weight:600; padding: 4px 12px 4px 0;')
                 stat_row.addWidget(stat_summary)
                 stat_row.addStretch(1)
                 stat_count = QLabel(f'字数：{len(md)}')
-                stat_count.setStyleSheet('font-size:1.28em; color:#000; font-weight:700; padding: 6px 0 6px 18px; line-height: 1.7;')
+                stat_count.setStyleSheet('font-size:14px; color:#000; font-weight:600; padding: 4px 0 4px 12px;')
                 stat_row.addWidget(stat_count)
                 card_layout.addLayout(stat_row)
                 card_layout.addSpacing(12)
@@ -998,18 +1047,30 @@ class XHSWindow(QWidget):
             if w:
                 w.setParent(None)
         self.thumb_buttons = []
-        for i in range(n):
+        actual_count = len(self.preview_webviews)  # 使用实际生成的webview数量
+        for i in range(actual_count):
             thumb_btn = ThumbButton(i, self)
             if i == self.selected_thumb_idx:
-                thumb_btn.setStyleSheet('border-radius:12px; border:2px solid #FF2D55; background:#fff; font-size:1.18em; font-weight:bold; color:#FF2D55;')
+                thumb_btn.setStyleSheet('border-radius:8px; border:2px solid #FF2D55; background:#fff; font-size:16px; font-weight:bold; color:#FF2D55;')
             thumb_btn.clicked.connect(lambda _, idx=i: self.on_thumb_clicked(idx))
             self.thumb_bar.addWidget(thumb_btn)
             self.thumb_buttons.append(thumb_btn)
+    
     def _set_thumb_pixmap(self, webview, idx):
+        """延迟设置缩略图，避免频繁刷新"""
         if idx < len(self.thumb_buttons):
-            pixmap = webview.grab().scaled(36, 24, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            self.thumb_buttons[idx].setPixmap(pixmap)
-            self.thumb_buttons[idx].setFullPixmap(webview.grab())
+            # 简化缩略图生成，减少性能开销
+            QTimer.singleShot(500, lambda: self._generate_thumb(webview, idx))
+    
+    def _generate_thumb(self, webview, idx):
+        """生成缩略图"""
+        try:
+            if idx < len(self.thumb_buttons):
+                pixmap = webview.grab().scaled(36, 24, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                self.thumb_buttons[idx].setPixmap(pixmap)
+                self.thumb_buttons[idx].setFullPixmap(webview.grab())
+        except Exception as e:
+            print(f"生成缩略图失败: {e}")
 
     def edit_card(self, idx):
         orig_md = self.preview_md_blocks[idx]
@@ -1097,24 +1158,48 @@ class XHSWindow(QWidget):
         if not content:
             QMessageBox.information(self, '提示', '请先上传或解析内容')
             return
-        # 智能分割算法：按标题、段落、代码块等断点分组，推荐张数
+        
+        # 优化的智能分割算法
         lines = [line.strip() for line in content.split('\n') if line.strip()]
-        n_title = sum(1 for l in lines if l.startswith('#'))
-        n_code = sum(1 for l in lines if l.startswith('```'))
-        n_para = max(1, len(lines) // 20)
-        n = max(n_title, n_code, n_para, 1)
-        n = min(max(n, 1), 18)
+        total_chars = sum(len(line) for line in lines)
+        
+        # 根据不同因素计算推荐分割数
+        n_by_length = max(1, total_chars // 800)  # 按字符数：每800字一张
+        n_by_lines = max(1, len(lines) // 15)     # 按行数：每15行一张  
+        n_by_structure = 1
+        
+        # 检查结构化内容
+        if self.last_is_md:
+            n_title = sum(1 for l in lines if l.startswith('#'))
+            n_code = sum(1 for l in lines if l.startswith('```'))
+            n_by_structure = max(n_title, n_code // 2, 1)
+        
+        # 综合考虑各种因素
+        n = min(max(n_by_length, n_by_lines, n_by_structure), 12)  # 最多12张
+        n = max(n, 1)  # 最少1张
+        
         self.split_spin.setValue(n)
-        QMessageBox.information(self, '智能推荐', f'根据内容结构，推荐分割为 {n} 张图片。你可继续微调。')
+        
+        # 推荐使用纯白极简模板进行长文分割
+        if total_chars > 1000:  # 长文推荐纯白模板
+            self.card_style_combo.setCurrentText('纯白极简')
+            QMessageBox.information(self, '智能推荐', f'根据内容结构，推荐分割为 {n} 张图片。\n长文推荐使用"纯白极简"模板以确保内容完整显示。')
+        else:
+            QMessageBox.information(self, '智能推荐', f'根据内容结构，推荐分割为 {n} 张图片。你可继续微调。')
+        
         self.refresh_previews()
 
     def on_thumb_clicked(self, idx):
         self.selected_thumb_idx = idx
-        # 高亮当前缩略图
+        # 简化缩略图高亮逻辑
         for i, btn in enumerate(self.thumb_buttons):
-            btn.setStyleSheet(f'border-radius:12px; border:2px solid {"#FF2D55" if i==idx else "#e0e0e0"}; background:#fff; font-size:1.18em; font-weight:bold; color:#FF2D55;')
+            if i == idx:
+                btn.setStyleSheet('border-radius:8px; border:2px solid #FF2D55; background:#fff; font-size:16px; font-weight:bold; color:#FF2D55;')
+            else:
+                btn.setStyleSheet('border-radius:8px; border:2px solid #e0e0e0; background:#fff; font-size:16px; font-weight:bold; color:#FF2D55;')
+        
         # 滚动主预览区到对应卡片
-        if self.preview_webviews:
+        if self.preview_webviews and idx < len(self.preview_webviews):
             target = self.preview_webviews[idx]
             self.scroll_area.ensureWidgetVisible(target)
 
@@ -1468,6 +1553,7 @@ class XHSWindow(QWidget):
             'retro': QColor('#fdf6e3'),
             'apple': QColor('#fffbe7'),
             'cream': QColor('#fff0e6'),
+            'clean': QColor('#ffffff'),
         }.get(style_type, QColor('#fff'))
         painter.setBrush(bg)
         painter.setPen(Qt.NoPen)
@@ -1487,6 +1573,7 @@ class XHSWindow(QWidget):
             'retro': QColor('#b58900'),
             'apple': QColor('#e1e1e1'),
             'cream': QColor('#ffd6b3'),
+            'clean': QColor('#e0e0e0'),
         }.get(style_type, QColor('#e0e0e0'))
         pen = painter.pen()
         pen.setColor(border)

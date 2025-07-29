@@ -123,12 +123,17 @@ def render_article_html(title, content, desc, style_type='simple', is_html=False
         emoji_list = ['💡', '📌', '✨', '🌟', '📝', '🎯', '🔖', '🚀', '🎀', '🍀']
         lines = [line.strip() for line in content.split('\n') if line.strip()]
         paragraphs = ''.join(f'<p>{emoji_list[i%len(emoji_list)]} {line}</p>' for i, line in enumerate(lines))
-    # 角标内容
+    
+    # 角标内容 - 简化样式
     badge = ''
     if style_type in ['card', 'minimal', 'simple', 'gradient', 'fresh', 'macaron', 'cream']:
-        badge = f"<div style='position:absolute;top:10px;right:18px;background:#ff9800;color:#fff;padding:2px 12px;border-radius:12px;font-size:0.95em;font-weight:bold;box-shadow:0 2px 8px #ffd6b3;'>{badge_text}</div>"
+        badge = f"<div style='position:absolute;top:10px;right:18px;background:#ff9800;color:#fff;padding:4px 12px;border-radius:8px;font-size:12px;font-weight:bold;'>{badge_text}</div>"
     elif style_type in ['kawaii', 'emoji', 'sticker', 'retro', 'apple']:
-        badge = f"<div style='position:absolute;top:10px;right:18px;background:#1976d2;color:#fff;padding:2px 12px;border-radius:12px;font-size:0.95em;font-weight:bold;box-shadow:0 2px 8px #b3c6e0;'>{badge_text}</div>"
+        badge = f"<div style='position:absolute;top:10px;right:18px;background:#1976d2;color:#fff;padding:4px 12px;border-radius:8px;font-size:12px;font-weight:bold;'>{badge_text}</div>"
+    elif style_type == 'clean':
+        # 纯白底极简模板不使用角标，保持最大简洁性
+        badge = ''
+    
     # 自定义字体
     font_family = ''
     if style_type in ['kawaii', 'cream']:
@@ -139,17 +144,149 @@ def render_article_html(title, content, desc, style_type='simple', is_html=False
         font_family = "font-family:'SF Pro Display','微软雅黑',Arial,sans-serif;"
     else:
         font_family = "font-family:'微软雅黑',Arial,sans-serif;"
-    if style_type == 'simple':
+    
+    if style_type == 'clean':
+        # 纯白底极简模板 - 移除所有不支持的CSS属性
         html = f'''
         <html><head>
         <meta charset="utf-8">
         {highlight_css}
         <style>
-        body {{ background: #fff8f0; {font_family} color: #333; margin: 0; padding: 0; }}
-        .container {{ max-width: 600px; margin: 2em auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px #f3cfcf; padding: 2em; position:relative; }}
-        h1 {{ color: #e57373; font-size: 2em; text-align: center; margin-bottom: 1em; }}
-        .desc {{ color: #ba68c8; font-size: 1.1em; margin-bottom: 1.5em; text-align: center; }}
-        .content p {{ margin: 1em 0; line-height: 1.8; font-size: 1.1em; }}
+        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+        body {{ 
+            background: #ffffff; 
+            color: #333; 
+            font-family: '微软雅黑', Arial, sans-serif; 
+            padding: 30px 25px; 
+            line-height: 1.6;
+            font-size: 16px;
+        }}
+        .container {{ 
+            max-width: 550px; 
+            margin: 0 auto; 
+            background: #ffffff; 
+        }}
+        h1 {{ 
+            color: #222; 
+            font-size: 24px; 
+            font-weight: 600;
+            margin-bottom: 20px; 
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }}
+        .desc {{ 
+            color: #666; 
+            font-size: 14px; 
+            margin-bottom: 25px; 
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }}
+        .content {{ 
+            font-size: 16px;
+            color: #444;
+            line-height: 1.8;
+        }}
+        .content p {{ 
+            margin-bottom: 16px; 
+            text-align: justify;
+            word-wrap: break-word;
+        }}
+        .content h1, .content h2, .content h3, .content h4, .content h5, .content h6 {{
+            color: #222;
+            margin: 20px 0 10px 0;
+            font-weight: 600;
+        }}
+        .content h2 {{ font-size: 20px; }}
+        .content h3 {{ font-size: 18px; }}
+        .content ul, .content ol {{
+            margin: 15px 0;
+            padding-left: 20px;
+        }}
+        .content li {{
+            margin: 5px 0;
+            line-height: 1.6;
+        }}
+        .content blockquote {{
+            border-left: 4px solid #ddd;
+            margin: 15px 0;
+            padding: 10px 15px;
+            background: #f9f9f9;
+            color: #666;
+        }}
+        .content code {{
+            background: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Consolas', monospace;
+            font-size: 14px;
+        }}
+        .content pre {{
+            background: #f8f8f8;
+            border: 1px solid #e1e1e1;
+            border-radius: 4px;
+            padding: 12px;
+            overflow: auto;
+            margin: 15px 0;
+            font-size: 14px;
+        }}
+        .content pre code {{
+            background: none;
+            padding: 0;
+        }}
+        </style></head><body>
+        <div class="container">
+          <h1>{title}</h1>
+          <div class="desc">{desc}</div>
+          <div class="content">
+            {paragraphs}
+          </div>
+        </div>
+        </body></html>
+        '''
+    elif style_type == 'minimal':
+        html = f'''
+        <html><head>
+        <meta charset="utf-8">
+        {highlight_css}
+        <style>
+        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+        body {{ 
+            background: #fff; 
+            color: #111; 
+            font-family: '微软雅黑', Arial, sans-serif; 
+            padding: 40px 30px;
+        }}
+        .container {{ 
+            max-width: 550px; 
+            margin: 0 auto; 
+            background: #fff; 
+            border: 2px solid #111; 
+            border-radius: 12px;
+            padding: 30px 25px;
+            position: relative;
+        }}
+        h1 {{ 
+            color: #111; 
+            font-size: 22px; 
+            font-weight: bold;
+            border-bottom: 2px solid #111; 
+            padding-bottom: 8px; 
+            margin-bottom: 15px; 
+        }}
+        .desc {{ 
+            color: #444; 
+            font-size: 15px; 
+            margin-bottom: 20px; 
+            border-left: 4px solid #111; 
+            padding-left: 15px; 
+        }}
+        .content p {{ 
+            margin-bottom: 15px; 
+            line-height: 1.8; 
+            font-size: 16px; 
+            border-bottom: 1px solid #eee; 
+            padding-bottom: 8px;
+        }}
         </style></head><body>
         <div class="container">
           {badge}
@@ -167,11 +304,43 @@ def render_article_html(title, content, desc, style_type='simple', is_html=False
         <meta charset="utf-8">
         {highlight_css}
         <style>
-        body {{ background: #f6f7fb; {font_family} color: #222; margin: 0; padding: 0; }}
-        .container {{ max-width: 620px; margin: 2em auto; background: #fff; border-radius: 18px; box-shadow: 0 4px 24px #e0e0e0; padding: 2.5em 2em; position:relative; }}
-        h1 {{ color: #d32f2f; font-size: 2.2em; margin-bottom: 0.7em; text-align: left; }}
-        .desc {{ background: #ffeaea; color: #d32f2f; font-size: 1.1em; border-radius: 8px; padding: 0.8em 1em; margin-bottom: 1.5em; }}
-        .content p {{ margin: 1.2em 0; line-height: 1.9; font-size: 1.13em; border-bottom: 1px solid #f3cfcf; padding-bottom: 0.5em; }}
+        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+        body {{ 
+            background: #f6f7fb; 
+            color: #222; 
+            font-family: '微软雅黑', Arial, sans-serif; 
+            padding: 40px 30px;
+        }}
+        .container {{ 
+            max-width: 570px; 
+            margin: 0 auto; 
+            background: #fff; 
+            border-radius: 15px; 
+            padding: 35px 25px;
+            position: relative;
+            border: 1px solid #e0e0e0;
+        }}
+        h1 {{ 
+            color: #d32f2f; 
+            font-size: 24px; 
+            margin-bottom: 12px; 
+            font-weight: bold;
+        }}
+        .desc {{ 
+            background: #ffeaea; 
+            color: #d32f2f; 
+            font-size: 15px; 
+            border-radius: 6px; 
+            padding: 12px 15px; 
+            margin-bottom: 20px; 
+        }}
+        .content p {{ 
+            margin-bottom: 18px; 
+            line-height: 1.7; 
+            font-size: 16px; 
+            border-bottom: 1px solid #f3cfcf; 
+            padding-bottom: 8px; 
+        }}
         </style></head><body>
         <div class="container">
           {badge}
@@ -183,199 +352,49 @@ def render_article_html(title, content, desc, style_type='simple', is_html=False
         </div>
         </body></html>
         '''
-    elif style_type == 'minimal':
+    elif style_type == 'simple':
         html = f'''
         <html><head>
         <meta charset="utf-8">
         {highlight_css}
         <style>
-        body {{ background: #fff; color: #111; font-family: '微软雅黑', Arial, sans-serif; margin: 0; padding: 0; }}
-        .container {{ max-width: 600px; margin: 2em auto; background: #fff; border-radius: 18px; box-shadow: 0 2px 12px #eee; padding: 2.5em 2em; border: 2px solid #111; }}
-        h1 {{ color: #111; font-size: 2.1em; text-align: left; border-bottom: 2px solid #111; padding-bottom: 0.5em; margin-bottom: 1em; font-weight: bold; }}
-        .desc {{ color: #444; font-size: 1.1em; margin-bottom: 1.5em; border-left: 4px solid #111; padding-left: 1em; }}
-        .content p {{ margin: 1.2em 0; line-height: 2.1; font-size: 1.18em; border-bottom: 1px solid #eee; }}
+        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+        body {{ 
+            background: #fff8f0; 
+            color: #333; 
+            font-family: '微软雅黑', Arial, sans-serif; 
+            padding: 40px 30px;
+        }}
+        .container {{ 
+            max-width: 550px; 
+            margin: 0 auto; 
+            background: #fff; 
+            border-radius: 10px; 
+            padding: 30px 25px;
+            position: relative;
+            border: 1px solid #e1cad2;
+        }}
+        h1 {{ 
+            color: #e57373; 
+            font-size: 22px; 
+            text-align: center; 
+            margin-bottom: 15px; 
+        }}
+        .desc {{ 
+            color: #ba68c8; 
+            font-size: 15px; 
+            margin-bottom: 20px; 
+            text-align: center; 
+        }}
+        .content p {{ 
+            margin: 15px 0; 
+            line-height: 1.6; 
+            font-size: 16px; 
+        }}
         </style></head><body>
         <div class="container">
           {badge}
           <h1>{title}</h1>
-          <div class="desc">{desc}</div>
-          <div class="content">
-            {paragraphs}
-          </div>
-        </div>
-        </body></html>
-        '''
-    elif style_type == 'gradient':
-        html = f'''
-        <html><head>
-        <meta charset="utf-8">
-        {highlight_css}
-        <style>
-        body {{ background: linear-gradient(135deg, #f8ffae 0%, #43c6ac 100%); color: #222; font-family: '微软雅黑', Arial, sans-serif; margin: 0; padding: 0; }}
-        .container {{ max-width: 600px; margin: 2em auto; background: rgba(255,255,255,0.95); border-radius: 28px; box-shadow: 0 8px 32px #b2f7ef; padding: 2.8em 2.2em; border: 2.5px solid #43c6ac; }}
-        h1 {{ color: #43c6ac; font-size: 2.2em; text-align: center; margin-bottom: 1em; font-weight: bold; letter-spacing: 1px; text-shadow: 0 2px 8px #f8ffae; }}
-        .desc {{ background: #e0f7fa; color: #43c6ac; font-size: 1.13em; border-radius: 12px; padding: 1em 1.2em; margin-bottom: 1.5em; text-align: center; box-shadow: 0 2px 8px #b2f7ef; }}
-        .content p {{ margin: 1.2em 0; line-height: 2.1; font-size: 1.18em; background: #f8ffae; border-radius: 10px; padding: 0.7em 1em; box-shadow: 0 1px 4px #b2f7ef; border-left: 6px solid #43c6ac; }}
-        </style></head><body>
-        <div class="container">
-          {badge}
-          <h1>{title}</h1>
-          <div class="desc">{desc}</div>
-          <div class="content">
-            {paragraphs}
-          </div>
-        </div>
-        </body></html>
-        '''
-    elif style_type == 'kawaii':
-        html = f'''
-        <html><head>
-        <meta charset="utf-8">
-        {highlight_css}
-        <style>
-        body {{ background: #fff0fa; color: #e573b4; font-family: 'Comic Sans MS','幼圆','微软雅黑',cursive,sans-serif; margin: 0; padding: 0; }}
-        .container {{ max-width: 600px; margin: 2em auto; background: #fff6fb; border-radius: 32px; box-shadow: 0 8px 36px #ffd6ec; padding: 3em 2.5em; border: 3px dashed #ffb6d5; }}
-        h1 {{ color: #ff69b4; font-size: 2.2em; text-align: center; margin-bottom: 1em; letter-spacing: 2px; text-shadow: 1px 2px 8px #ffe4f7; font-family: 'Comic Sans MS','幼圆','微软雅黑',cursive,sans-serif; }}
-        .desc {{ background: #ffe4f7; color: #ff69b4; font-size: 1.15em; border-radius: 16px; padding: 1.2em 1.5em; margin-bottom: 1.5em; text-align: center; box-shadow: 0 2px 8px #ffd6ec; font-family: 'Comic Sans MS','幼圆','微软雅黑',cursive,sans-serif; }}
-        .content p {{ margin: 1.2em 0; line-height: 2.1; font-size: 1.18em; background: #fff0fa; border-radius: 14px; padding: 0.8em 1.2em; box-shadow: 0 1px 6px #ffd6ec; border-left: 8px solid #ffb6d5; font-family: 'Comic Sans MS','幼圆','微软雅黑',cursive,sans-serif; }}
-        </style></head><body>
-        <div class="container">
-          {badge}
-          <h1>🌸{title}🌸</h1>
-          <div class="desc">{desc} <span style='font-size:1.3em;'>ฅ^•ﻌ•^ฅ</span></div>
-          <div class="content">
-            {paragraphs}
-          </div>
-        </div>
-        </body></html>
-        '''
-    elif style_type == 'emoji':
-        html = f'''
-        <html><head>
-        <meta charset="utf-8">
-        {highlight_css}
-        <style>
-        body {{ background: #fffbe7; {font_family} font-family: '幼圆', '微软雅黑', Arial, sans-serif; color: #ff9800; margin: 0; padding: 0; }}
-        .container {{ max-width: 600px; margin: 2em auto; background: #fffde7; border-radius: 30px; box-shadow: 0 4px 24px #ffe082; padding: 2.5em 2em; border: 3px dashed #ffd54f; }}
-        h1 {{ color: #ff9800; font-size: 2.1em; text-align: center; margin-bottom: 1em; letter-spacing: 2px; text-shadow: 1px 2px 8px #ffe082; }}
-        .desc {{ background: #fff8e1; color: #ff9800; font-size: 1.1em; border-radius: 16px; padding: 1em 1.2em; margin-bottom: 1.5em; text-align: center; box-shadow: 0 2px 8px #ffe082; }}
-        .content p {{ margin: 1.2em 0; line-height: 2.1; font-size: 1.13em; background: #fffbe7; border-radius: 12px; padding: 0.7em 1em; box-shadow: 0 1px 4px #ffe082; border-left: 6px solid #ffd54f; }}
-        </style></head><body>
-        <div class="container">
-          {badge}
-          <h1>✨{title}✨</h1>
-          <div class="desc">{desc} <span style='font-size:1.3em;'>😊🚀🌈</span></div>
-          <div class="content">
-            {paragraphs}
-          </div>
-        </div>
-        </body></html>
-        '''
-    elif style_type == 'macaron':
-        html = f'''
-        <html><head>
-        <meta charset="utf-8">
-        {highlight_css}
-        <style>
-        body {{ background: linear-gradient(135deg, #ffe0f7 0%, #e0f7fa 100%); {font_family} color: #a259ff; margin: 0; padding: 0; }}
-        .container {{ max-width: 600px; margin: 2em auto; background: #fff; border-radius: 32px; box-shadow: 0 8px 36px #b2f7ef; padding: 2.5em 2em; border: 3px solid #a259ff; }}
-        h1 {{ color: #a259ff; font-size: 2.1em; text-align: center; margin-bottom: 1em; letter-spacing: 2px; text-shadow: 1px 2px 8px #ffe4f7; }}
-        .desc {{ background: #e0f7fa; color: #a259ff; font-size: 1.1em; border-radius: 16px; padding: 1em 1.2em; margin-bottom: 1.5em; text-align: center; box-shadow: 0 2px 8px #ffd6ec; }}
-        .content p {{ margin: 1.2em 0; line-height: 2.1; font-size: 1.13em; background: #ffe0f7; border-radius: 12px; padding: 0.7em 1em; box-shadow: 0 1px 4px #ffd6ec; border-left: 6px solid #a259ff; }}
-        </style></head><body>
-        <div class="container">
-          {badge}
-          <h1>🍬{title}🍬</h1>
-          <div class="desc">{desc} <span style='font-size:1.3em;'>🧁🍭🍡</span></div>
-          <div class="content">
-            {paragraphs}
-          </div>
-        </div>
-        </body></html>
-        '''
-    elif style_type == 'sticker':
-        html = f'''
-        <html><head>
-        <meta charset="utf-8">
-        {highlight_css}
-        <style>
-        body {{ background: #f9fbe7; {font_family} font-family: '微软雅黑', Arial, sans-serif; color: #43a047; margin: 0; padding: 0; }}
-        .container {{ max-width: 600px; margin: 2em auto; background: #fff; border-radius: 28px; box-shadow: 0 6px 32px #c5e1a5; padding: 2.5em 2em; border: 3px dashed #43a047; position: relative; }}
-        h1 {{ color: #43a047; font-size: 2em; text-align: left; margin-bottom: 1em; letter-spacing: 1px; }}
-        .desc {{ background: #e8f5e9; color: #43a047; font-size: 1.1em; border-radius: 12px; padding: 0.8em 1em; margin-bottom: 1.5em; text-align: left; box-shadow: 0 2px 8px #c5e1a5; }}
-        .content p {{ margin: 1.2em 0; line-height: 2.1; font-size: 1.13em; background: #f1f8e9; border-radius: 10px; padding: 0.7em 1em; box-shadow: 0 1px 4px #c5e1a5; border-left: 6px solid #43a047; }}
-        .sticker {{ position: absolute; top: -18px; right: -18px; background: #fffde7; color: #ff9800; border: 2px solid #ffd54f; border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; font-size: 2em; box-shadow: 0 2px 8px #ffe082; }}
-        </style></head><body>
-        <div class="container">
-          {badge}
-          <div class="sticker">📎</div>
-          <h1>{title}</h1>
-          <div class="desc">{desc} <span style='font-size:1.2em;'>🌟</span></div>
-          <div class="content">
-            {paragraphs}
-          </div>
-        </div>
-        </body></html>
-        '''
-    elif style_type == 'retro':
-        html = f'''
-        <html><head>
-        <meta charset="utf-8">
-        {highlight_css}
-        <style>
-        body {{ background: #fdf6e3; color: #b58900; font-family: 'Fira Mono','微软雅黑',monospace; margin: 0; padding: 0; }}
-        .container {{ max-width: 600px; margin: 2em auto; background: #fdf6e3; border-radius: 20px; box-shadow: 0 4px 16px #f5e1a4; padding: 2.5em 2em; border: 2px dashed #b58900; }}
-        h1 {{ color: #b58900; font-size: 2.1em; text-align: left; border-bottom: 2px dashed #b58900; padding-bottom: 0.5em; margin-bottom: 1em; font-family: 'Fira Mono','微软雅黑',monospace; }}
-        .desc {{ color: #b58900; font-size: 1.13em; margin-bottom: 1.5em; border-left: 4px dashed #b58900; padding-left: 1em; font-family: 'Fira Mono','微软雅黑',monospace; }}
-        .content p {{ margin: 1.2em 0; line-height: 2.1; font-size: 1.15em; border-bottom: 1px dashed #b58900; font-family: 'Fira Mono','微软雅黑',monospace; }}
-        </style></head><body>
-        <div class="container">
-          {badge}
-          <h1>{title}</h1>
-          <div class="desc">{desc}</div>
-          <div class="content">
-            {paragraphs}
-          </div>
-        </div>
-        </body></html>
-        '''
-    elif style_type == 'apple':
-        html = f'''
-        <html><head>
-        <meta charset="utf-8">
-        {highlight_css}
-        <style>
-        body {{ background: #fffbe7; color: #222; font-family: 'SF Pro Display','微软雅黑',Arial,sans-serif; margin: 0; padding: 0; }}
-        .container {{ max-width: 600px; margin: 2em auto; background: #fffbe7; border-radius: 20px; box-shadow: 0 4px 16px #e1e1e1; padding: 2.5em 2em; border: 2px solid #e1e1e1; }}
-        h1 {{ color: #222; font-size: 2.1em; text-align: left; border-bottom: 2px solid #e1e1e1; padding-bottom: 0.5em; margin-bottom: 1em; font-family: 'SF Pro Display','微软雅黑',Arial,sans-serif; }}
-        .desc {{ color: #888; font-size: 1.13em; margin-bottom: 1.5em; border-left: 4px solid #e1e1e1; padding-left: 1em; font-family: 'SF Pro Display','微软雅黑',Arial,sans-serif; }}
-        .content p {{ margin: 1.2em 0; line-height: 2.1; font-size: 1.15em; border-bottom: 1px solid #e1e1e1; font-family: 'SF Pro Display','微软雅黑',Arial,sans-serif; }}
-        </style></head><body>
-        <div class="container">
-          {badge}
-          <h1>{title}</h1>
-          <div class="desc">{desc}</div>
-          <div class="content">
-            {paragraphs}
-          </div>
-        </div>
-        </body></html>
-        '''
-    elif style_type == 'cream':
-        html = f'''
-        <html><head>
-        <meta charset="utf-8">
-        {highlight_css}
-        <style>
-        body {{ background: #fff0e6; color: #ff8c42; font-family: 'Comic Sans MS','微软雅黑',Arial,sans-serif; margin: 0; padding: 0; }}
-        .container {{ max-width: 600px; margin: 2em auto; background: #fff0e6; border-radius: 32px; box-shadow: 0 8px 32px #ffd6b3; padding: 3em 2.5em; border: 2px solid #ffd6b3; }}
-        h1 {{ color: #ff8c42; font-size: 2.2em; text-align: center; margin-bottom: 1em; letter-spacing: 2px; text-shadow: 1px 2px 8px #ffd6b3; font-family: 'Comic Sans MS','微软雅黑',Arial,sans-serif; }}
-        .desc {{ background: #fff6e6; color: #ff8c42; font-size: 1.15em; border-radius: 16px; padding: 1.2em 1.5em; margin-bottom: 1.5em; text-align: center; box-shadow: 0 2px 8px #ffd6b3; font-family: 'Comic Sans MS','微软雅黑',Arial,sans-serif; }}
-        .content p {{ margin: 1.2em 0; line-height: 2.1; font-size: 1.18em; background: #fff0e6; border-radius: 14px; padding: 0.8em 1.2em; box-shadow: 0 1px 6px #ffd6b3; border-left: 8px solid #ff8c42; font-family: 'Comic Sans MS','微软雅黑',Arial,sans-serif; }}
-        </style></head><body>
-        <div class="container">
-          {badge}
-          <h1>🧁{title}🧁</h1>
           <div class="desc">{desc}</div>
           <div class="content">
             {paragraphs}
@@ -384,6 +403,7 @@ def render_article_html(title, content, desc, style_type='simple', is_html=False
         </body></html>
         '''
     else:
-        # 默认用simple
-        return render_article_html(title, content, desc, style_type='simple', is_html=is_html, highlight=highlight, highlight_theme=highlight_theme, badge_text=badge_text)
+        # 对于其他模板，使用简化的clean模板
+        return render_article_html(title, content, desc, style_type='clean', is_html=is_html, highlight=highlight, highlight_theme=highlight_theme, badge_text=badge_text)
+    
     return html 
