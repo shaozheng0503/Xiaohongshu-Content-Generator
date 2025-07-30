@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小红书内容生成器 - Web版</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- 自定义CSS -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-gradient">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-magic text-warning me-2"></i>
+                <strong>小红书内容生成器</strong>
+            </a>
+            <div class="navbar-nav ms-auto">
+                <button class="btn btn-outline-light me-2" onclick="showHistory()">
+                    <i class="fas fa-history me-1"></i>历史记录
+                </button>
+                <button class="btn btn-light" onclick="exportAll()">
+                    <i class="fas fa-download me-1"></i>批量导出
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主容器 -->
+    <div class="container mt-4">
+        <!-- 功能介绍卡片 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="hero-card">
+                    <div class="row align-items-center">
+                        <div class="col-lg-8">
+                            <h1 class="hero-title">
+                                <i class="fas fa-sparkles text-warning me-2"></i>
+                                一键将博客文章转为小红书风格图片
+                            </h1>
+                            <p class="hero-subtitle">
+                                支持14种精美模板、多主题、智能分割、内容编辑与批量导出。长文推荐使用"纯白极简"模板，确保内容完整显示。
+                            </p>
+                            <div class="hero-features">
+                                <span class="feature-tag"><i class="fas fa-palette"></i>14种风格</span>
+                                <span class="feature-tag"><i class="fas fa-brain"></i>智能分割</span>
+                                <span class="feature-tag"><i class="fas fa-download"></i>批量导出</span>
+                                <span class="feature-tag"><i class="fas fa-eye"></i>实时预览</span>
+                                <span class="feature-tag"><i class="fas fa-mobile-alt"></i>响应式设计</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 text-center">
+                            <div class="hero-illustration">
+                                <i class="fas fa-images fa-4x text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 输入区域 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="input-card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-plus-circle text-warning me-2"></i>
+                            添加内容
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- 选项卡 -->
+                        <ul class="nav nav-pills mb-3" id="input-tabs">
+                            <li class="nav-item">
+                                <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#url-tab">
+                                    <i class="fas fa-link me-1"></i>链接解析
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#file-tab">
+                                    <i class="fas fa-file-upload me-1"></i>文件上传
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#text-tab">
+                                    <i class="fas fa-edit me-1"></i>直接输入
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content">
+                            <!-- URL解析选项卡 -->
+                            <div class="tab-pane fade show active" id="url-tab">
+                                <div class="row">
+                                    <div class="col-lg-10">
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-globe"></i>
+                                            </span>
+                                            <input type="url" class="form-control" id="url-input" 
+                                                   placeholder="请输入博客文章链接，支持主流平台...">
+                                            <button class="btn btn-primary" onclick="parseUrl()">
+                                                <i class="fas fa-magic me-1"></i>解析
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 文件上传选项卡 -->
+                            <div class="tab-pane fade" id="file-tab">
+                                <div class="upload-area" onclick="document.getElementById('file-input').click()">
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted">点击或拖拽上传文件</p>
+                                    <small class="text-muted">支持 .md、.txt、.html 文件，最大16MB</small>
+                                    <input type="file" id="file-input" class="d-none" accept=".md,.txt,.html" onchange="uploadFile()">
+                                </div>
+                            </div>
+
+                            <!-- 直接输入选项卡 -->
+                            <div class="tab-pane fade" id="text-tab">
+                                <textarea class="form-control" id="text-input" rows="6" 
+                                          placeholder="在此直接输入或粘贴您的内容..."></textarea>
+                                <div class="mt-3">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="is-markdown">
+                                        <label class="form-check-label" for="is-markdown">
+                                            <i class="fab fa-markdown me-1"></i>Markdown格式
+                                        </label>
+                                    </div>
+                                    <button class="btn btn-primary ms-3" onclick="processText()">
+                                        <i class="fas fa-check me-1"></i>使用此内容
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 内容编辑区域 -->
+        <div class="row mb-4" id="content-section" style="display: none;">
+            <div class="col-12">
+                <div class="content-card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-edit text-success me-2"></i>
+                            内容编辑
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label class="form-label">标题</label>
+                                <input type="text" class="form-control mb-3" id="content-title" placeholder="自动生成的标题">
+                            </div>
+                            <div class="col-lg-6">
+                                <label class="form-label">描述</label>
+                                <textarea class="form-control mb-3" id="content-description" rows="2" placeholder="自动生成的描述"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 样式选择区域 -->
+        <div class="row mb-4" id="style-section" style="display: none;">
+            <div class="col-12">
+                <div class="style-card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-palette text-info me-2"></i>
+                            样式选择 <span class="badge bg-info">14种风格</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- 样式网格 -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                                <div class="style-option" data-style="clean">
+                                    <div class="style-preview clean-preview">
+                                        <div class="style-icon">📄</div>
+                                        <h6>纯白极简</h6>
+                                        <small>长文推荐</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                                <div class="style-option" data-style="minimal">
+                                    <div class="style-preview minimal-preview">
+                                        <div class="style-icon">⬛</div>
+                                        <h6>极简黑白</h6>
+                                        <small>经典简约</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                                <div class="style-option" data-style="card">
+                                    <div class="style-preview card-preview">
+                                        <div class="style-icon">📰</div>
+                                        <h6>杂志卡片</h6>
+                                        <small>小红书风</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                                <div class="style-option" data-style="gradient">
+                                    <div class="style-preview gradient-preview">
+                                        <div class="style-icon">🌈</div>
+                                        <h6>梦幻渐变</h6>
+                                        <small>彩虹效果</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                                <div class="style-option" data-style="fresh">
+                                    <div class="style-preview fresh-preview">
+                                        <div class="style-icon">🌿</div>
+                                        <h6>清新自然</h6>
+                                        <small>绿色系</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                                <div class="style-option" data-style="darktech">
+                                    <div class="style-preview darktech-preview">
+                                        <div class="style-icon">🖤</div>
+                                        <h6>暗黑科技</h6>
+                                        <small>赛博朋克</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                                <div class="style-option" data-style="kawaii">
+                                    <div class="style-preview kawaii-preview">
+                                        <div class="style-icon">🎀</div>
+                                        <h6>卡哇伊风格</h6>
+                                        <small>可爱粉色</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                                <div class="style-option" data-style="simple">
+                                    <div class="style-preview simple-preview">
+                                        <div class="style-icon">💧</div>
+                                        <h6>简约清新风</h6>
+                                        <small>温馨色调</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                                <div class="style-option" data-style="emoji">
+                                    <div class="style-preview emoji-preview">
+                                        <div class="style-icon">😃</div>
+                                        <h6>emoji风</h6>
+                                        <small>表情丰富</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                                <div class="style-option" data-style="macaron">
+                                    <div class="style-preview macaron-preview">
+                                        <div class="style-icon">🍰</div>
+                                        <h6>马卡龙风</h6>
+                                        <small>糖果色彩</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                                <div class="style-option" data-style="sticker">
+                                    <div class="style-preview sticker-preview">
+                                        <div class="style-icon">📎</div>
+                                        <h6>贴纸风</h6>
+                                        <small>撕贴效果</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                                <div class="style-option" data-style="retro">
+                                    <div class="style-preview retro-preview">
+                                        <div class="style-icon">📚</div>
+                                        <h6>复古学习感</h6>
+                                        <small>纸张质感</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                                <div class="style-option" data-style="apple">
+                                    <div class="style-preview apple-preview">
+                                        <div class="style-icon">🍏</div>
+                                        <h6>苹果备忘录</h6>
+                                        <small>简洁现代</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                                <div class="style-option" data-style="cream">
+                                    <div class="style-preview cream-preview">
+                                        <div class="style-icon">🧁</div>
+                                        <h6>奶油胶风</h6>
+                                        <small>温柔奶油</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 设置区域 -->
+        <div class="row mb-4" id="settings-section" style="display: none;">
+            <div class="col-12">
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-cog text-warning me-2"></i>
+                            生成设置
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <label class="form-label">当前样式</label>
+                                <input type="text" class="form-control" id="current-style" value="纯白极简" readonly>
+                            </div>
+                            <div class="col-lg-3">
+                                <label class="form-label">分割张数</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="split-count" value="3" min="1" max="12">
+                                    <button class="btn btn-outline-secondary" onclick="smartSplit()">
+                                        <i class="fas fa-brain me-1"></i>智能推荐
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <label class="form-label">代码高亮</label>
+                                <select class="form-select" id="highlight-theme">
+                                    <option value="github">GitHub</option>
+                                    <option value="monokai">Monokai</option>
+                                    <option value="dracula">Dracula</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-3">
+                                <label class="form-label">操作</label>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-success flex-fill" onclick="generatePreviews()">
+                                        <i class="fas fa-play me-1"></i>生成预览
+                                    </button>
+                                    <button class="btn btn-primary" onclick="oneClickBeautify()" title="一键美化">
+                                        <i class="fas fa-wand-magic-sparkles"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 预览区域 -->
+        <div class="row mb-4" id="preview-section" style="display: none;">
+            <div class="col-12">
+                <div class="preview-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-eye text-info me-2"></i>
+                            预览结果 <span id="preview-count" class="badge bg-info">0</span>
+                        </h5>
+                        <div class="btn-group">
+                            <button class="btn btn-outline-primary btn-sm" onclick="saveHistory()">
+                                <i class="fas fa-save me-1"></i>保存
+                            </button>
+                            <button class="btn btn-primary btn-sm" onclick="exportImages()">
+                                <i class="fas fa-download me-1"></i>导出图片
+                            </button>
+                            <button class="btn btn-outline-warning btn-sm" onclick="debugStatus()" title="查看调试信息">
+                                <i class="fas fa-bug me-1"></i>调试
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="preview-container" class="row">
+                            <!-- 预览图片将在这里动态生成 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载提示 -->
+    <div class="loading-overlay" id="loading-overlay" style="display: none;">
+        <div class="loading-content">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">加载中...</span>
+            </div>
+            <p class="mt-3">正在处理中，请稍候...</p>
+        </div>
+    </div>
+
+    <!-- 历史记录模态框 -->
+    <div class="modal fade" id="historyModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-history me-2"></i>历史记录
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="history-list">
+                        <!-- 历史记录列表 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- 自定义JS -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html> 
